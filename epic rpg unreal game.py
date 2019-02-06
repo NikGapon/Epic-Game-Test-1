@@ -90,14 +90,14 @@ def generate_level(level):
                 Tile('wall', x, y)
             elif level[y][x] == '@':
                 Tile('empty', x, y)
-                new_player = Player(load_image('player_stay_down.png'), x, y)
+                new_player = Player(x, y)
     return new_player
 
 
 tile_images = {
     'wall': load_image('wall.png'),
     'empty': load_image('grass1.png'),
-    'player': load_image('player_stay_down.png')
+    'player': load_image('animations\\down_2.png')
 }
 
 
@@ -110,56 +110,35 @@ class Tile(pygame.sprite.Sprite):
 
 
 class AnimatedSprite(pygame.sprite.Sprite):
-    def __init__(self, sheet, columns, rows):
+    def __init__(self, frames, x, y):
         super().__init__(all_sprites)
-        self.frames = []
-        self.cut_sheet(sheet, columns, rows)
+        self.frames = frames
         self.cur_frame = 0
         self.image = self.frames[self.cur_frame]
-
-    def cut_sheet(self, sheet, columns, rows):
-        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
-                                sheet.get_height() // rows)
-        for j in range(rows):
-            for i in range(columns):
-                frame_location = (self.rect.w * i, self.rect.h * j)
-                self.frames.append(sheet.subsurface(pygame.Rect(
-                    frame_location, self.rect.size)))
+        self.rect = self.image.get_rect()
+        self.rect.move(x, y)
 
     def update(self):
-
         self.cur_frame = (self.cur_frame + 1) % len(self.frames)
         self.image = self.frames[self.cur_frame]
 
 
 class Player(AnimatedSprite):
-    def __init__(self, sheet,  x, y):
+    def __init__(self, x, y):
         self.frames = []
+        self.cur_frame = 0
+        self.image = tile_images['player']
         pygame.sprite.Sprite.__init__(self, player_group)
-        self.image = sheet
-        self.rect = self.image.get_rect()
-        self.rect.move(TILE_WIDTH * x + 15,
-                       TILE_HEIGHT * y + 5)
-        if self.rect.w != TILE_WIDTH:
-            self.cur_frame = 0
-            self.cut_sheet(sheet, 4, 1)
-            self.image = self.frames[self.cur_frame]
+        self.rect = self.image.get_rect().move(
+            TILE_WIDTH * x + 15, TILE_HEIGHT * y + 5)
 
+    def update(self, frames):
+        clock.tick(15)
+        self.frames = frames
 
+        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
+        self.image = self.frames[self.cur_frame]
 
-class Camera:
-    def __init__(self):
-        self.dx = 0
-        self.dy = 0
-        self.state = pygame.Rect(0, 0, len(level[0] * 60), len(level) * 60)
-
-    def apply(self, obj):
-        obj.rect.x += self.dx
-        obj.rect.y += self.dy
-
-    def update(self, target):
-        self.dx = -(target.rect.x + target.rect.w // 2 - WIDTH // 2)
-        self.dy = -(target.rect.y + target.rect.h // 2 - HEIGHT // 2)
 
 
 start_screen()
@@ -168,6 +147,7 @@ player = generate_level(level)
 
 total_level_width = len(level[0]) * 40
 total_level_height = len(level) * 40
+
 
 pressed_left = False
 pressed_right = False
@@ -180,38 +160,57 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:  # check for key presses
-            if event.key == pygame.K_LEFT or event.key == pygame.K_a:  # left arrow turns left
+            if event.key == pygame.K_LEFT or event.key == pygame.K_a:# left arrow turns left
                 pressed_left = True
             elif event.key == pygame.K_RIGHT or event.key == pygame.K_d: # right arrow turns right
                 pressed_right = True
             elif event.key == pygame.K_UP or event.key == pygame.K_w:  # up arrow goes up
                 pressed_up = True
             elif event.key == pygame.K_DOWN or event.key == pygame.K_s:  # down arrow goes down
-
                 pressed_down = True
         elif event.type == pygame.KEYUP:  # check for key releases
-            if event.key == pygame.K_LEFT or event.key == pygame.K_a:  # left arrow turns left
+            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                player.update([load_image('animations\\left_2.png')])# left arrow turns left
                 pressed_left = False
-            elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:  # right arrow turns right
+            elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                player.update([load_image('animations\\right_2.png')])# right arrow turns right
                 pressed_right = False
-            elif event.key == pygame.K_UP or event.key == pygame.K_w:  # up arrow goes up
+            elif event.key == pygame.K_UP or event.key == pygame.K_w:
+                player.update([load_image('animations\\up_2.png')])# up arrow goes up
                 pressed_up = False
-            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:  # down arrow goes down
+            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                player.update([load_image('animations\\down_2.png')])# down arrow goes down
                 pressed_down = False
 
     # In your game loop, check for key states:
     if pressed_left:
+        player.update(
+            [load_image('animations\\left_1.png'), load_image('animations\\left_2.png'),
+             load_image('animations\\left_3.png'),
+             load_image('animations\\left_2.png')])
         player.rect.x -= STEP
     if pressed_right:
+        player.update(
+            [load_image('animations\\right_1.png'), load_image('animations\\right_2.png'),
+             load_image('animations\\right_3.png'),
+             load_image('animations\\right_2.png')])
         player.rect.x += STEP
     if pressed_up:
+        player.update(
+            [load_image('animations\\up_1.png'), load_image('animations\\up_2.png'), load_image('animations\\up_3.png'),
+             load_image('animations\\up_2.png')])
         player.rect.y -= STEP
     if pressed_down:
-
+        player.update(
+            [load_image('animations\\down_1.png'), load_image('animations\\down_2.png'),
+             load_image('animations\\down_3.png'), load_image('animations\\down_2.png')])
         player.rect.y += STEP
 
     screen.fill(pygame.Color('black'))
-
+    if player.rect.x > 980:
+        level = load_level('levelex.txt')
+        player_group.empty()
+        player = generate_level(level)
     tiles_group.draw(screen)
     player_group.draw(screen)
     pygame.display.flip()
