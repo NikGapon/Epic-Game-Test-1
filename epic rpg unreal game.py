@@ -11,6 +11,7 @@ HEIGHT = 768
 STEP = 10
 TILE_WIDTH = TILE_HEIGHT = 90
 inv_open = 1
+proverka_inv = 1
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
@@ -142,6 +143,7 @@ class Inv(pygame.sprite.Sprite):
 
 
 
+
 class AnimatedSprite(pygame.sprite.Sprite):
     def __init__(self, sheet, columns, rows):
         super().__init__(all_sprites)
@@ -234,8 +236,16 @@ while running:
             elif event.key == pygame.K_DOWN or event.key == pygame.K_s:  # down arrow goes down
                 pressed_down = False
 
-            elif event.type == pygame.K_i:
-                Inv().upd()
+            elif event.key == pygame.K_i:
+                proverka_inv += 1
+                if proverka_inv % 2 == 0:
+                    inv_sprite.rect.x = 4000
+                    inv_sprite.rect.y = -4000
+                else:
+                    inv_sprite.rect.x = 0
+                    inv_sprite.rect.y = 0
+
+
 
     # In your game loop, check for key states:
     if pressed_left:
