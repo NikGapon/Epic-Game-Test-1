@@ -6,8 +6,8 @@ import pygame
 pygame.init()
 
 FPS = 50
-WIDTH = 1275
-HEIGHT = 920
+WIDTH = 1024
+HEIGHT = 768
 STEP = 10
 TILE_WIDTH = TILE_HEIGHT = 90
 
@@ -180,23 +180,23 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:  # check for key presses
-            if event.key == pygame.K_LEFT:  # left arrow turns left
+            if event.key == pygame.K_LEFT or event.key == pygame.K_a:  # left arrow turns left
                 pressed_left = True
-            elif event.key == pygame.K_RIGHT:  # right arrow turns right
+            elif event.key == pygame.K_RIGHT or event.key == pygame.K_d: # right arrow turns right
                 pressed_right = True
-            elif event.key == pygame.K_UP:  # up arrow goes up
+            elif event.key == pygame.K_UP or event.key == pygame.K_w:  # up arrow goes up
                 pressed_up = True
-            elif event.key == pygame.K_DOWN:  # down arrow goes down
+            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:  # down arrow goes down
 
                 pressed_down = True
         elif event.type == pygame.KEYUP:  # check for key releases
-            if event.key == pygame.K_LEFT:  # left arrow turns left
+            if event.key == pygame.K_LEFT or event.key == pygame.K_a:  # left arrow turns left
                 pressed_left = False
-            elif event.key == pygame.K_RIGHT:  # right arrow turns right
+            elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:  # right arrow turns right
                 pressed_right = False
-            elif event.key == pygame.K_UP:  # up arrow goes up
+            elif event.key == pygame.K_UP or event.key == pygame.K_w:  # up arrow goes up
                 pressed_up = False
-            elif event.key == pygame.K_DOWN:  # down arrow goes down
+            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:  # down arrow goes down
                 pressed_down = False
 
     # In your game loop, check for key states:
