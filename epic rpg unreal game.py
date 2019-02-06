@@ -10,7 +10,8 @@ WIDTH = 1024
 HEIGHT = 768
 STEP = 10
 TILE_WIDTH = TILE_HEIGHT = 90
-
+inv_open = 1
+proverka_inv = 0
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
@@ -20,6 +21,7 @@ timer = pygame.time.Clock()
 all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
+inv_group = pygame.sprite.Group()
 
 
 def load_image(name, colorkey=None):
@@ -36,6 +38,16 @@ def load_image(name, colorkey=None):
         image.set_colorkey(colorkey)
     return image
 
+inv_sprite = pygame.sprite.Sprite()
+
+inv_sprite.image = load_image("inv v1.png")
+
+inv_sprite.rect = inv_sprite.image.get_rect()
+
+inv_group.add(inv_sprite)
+
+inv_sprite.rect.x = 4000
+inv_sprite.rect.y = -4000
 
 def start_screen():
     intro_text = ["ЗАСТАВКА", "",
@@ -109,6 +121,29 @@ class Tile(pygame.sprite.Sprite):
                                                TILE_HEIGHT * pos_y)
 
 
+class Inv(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__(all_sprites)
+        self.proverka = 1
+        self.start_y = -4000
+        self.start_x = 4000
+        self.x = 0
+        self.y = 0
+
+    def upd(self):
+        self.proverka += 1
+        if self.proverka % 2 == 0:
+            inv_sprite.rect.x = self.start_x
+            inv_sprite.rect.y = self.start_y
+        else:
+            inv_sprite.rect.x = self.x
+            inv_sprite.rect.y = self.y
+
+
+
+
+
+
 class AnimatedSprite(pygame.sprite.Sprite):
     def __init__(self, frames, x, y):
         super().__init__(all_sprites)
@@ -159,6 +194,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
         elif event.type == pygame.KEYDOWN:  # check for key presses
             if event.key == pygame.K_LEFT or event.key == pygame.K_a:# left arrow turns left
                 pressed_left = True
@@ -171,7 +207,7 @@ while running:
         elif event.type == pygame.KEYUP:  # check for key releases
             if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                 player.update([load_image('animations\\left_2.png')])# left arrow turns left
-                pressed_left = False
+                pressed_left = False							
             elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                 player.update([load_image('animations\\right_2.png')])# right arrow turns right
                 pressed_right = False
@@ -181,6 +217,17 @@ while running:
             elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
                 player.update([load_image('animations\\down_2.png')])# down arrow goes down
                 pressed_down = False
+
+            elif event.key == pygame.K_i:
+                proverka_inv += 1
+                if proverka_inv % 2 == 0:
+                    inv_sprite.rect.x = 4000
+                    inv_sprite.rect.y = -4000
+                else:
+                    inv_sprite.rect.x = 0
+                    inv_sprite.rect.y = 0
+
+
 
     # In your game loop, check for key states:
     if pressed_left:
@@ -213,6 +260,7 @@ while running:
         player = generate_level(level)
     tiles_group.draw(screen)
     player_group.draw(screen)
+    inv_group.draw(screen)
     pygame.display.flip()
     clock.tick(FPS)
 pygame.quit()
