@@ -11,7 +11,7 @@ HEIGHT = 768
 STEP = 10
 TILE_WIDTH = TILE_HEIGHT = 90
 inv_open = 1
-proverka_inv = 1
+proverka_inv = 0
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
