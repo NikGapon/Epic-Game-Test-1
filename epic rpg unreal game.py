@@ -78,6 +78,12 @@ def start_screen():
         clock.tick(FPS)
 
 
+class Hero:
+    def __init__(self):
+
+        self.inv_hero = []
+        self.ekip_hero = [] # заполнит после реализации классов персонажей 
+
 def terminate():
     pygame.quit()
     sys.exit()
