@@ -247,7 +247,8 @@ while running:
                 else:
                     inv_sprite.rect.x = 0
                     inv_sprite.rect.y = 0
-
+                    #while proverka_inv % 2 != 0:
+                    #    print(11)
                 proverka_inv += 1
 
 
