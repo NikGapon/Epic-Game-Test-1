@@ -11,7 +11,7 @@ HEIGHT = 768
 STEP = 10
 TILE_WIDTH = TILE_HEIGHT = 90
 inv_open = 1
-proverka_inv = 0
+proverka_inv = 1
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
@@ -82,7 +82,22 @@ class Hero:
     def __init__(self):
 
         self.inv_hero = []
-        self.ekip_hero = [] # заполнит после реализации классов персонажей 
+        self.ekip_hero = []  # заполнит после реализации классов персонажей
+        self.class_hero = None
+        self.lvl_hero = None
+
+
+
+    def open_inv(self):
+        return self.inv_hero
+
+    def apend_hero(self, lot):
+        if len(self.inv_hero) <= 20:
+            self.inv_hero.append(lot)
+        else:
+            pass  # тут должно быть сообщение о  заролнености инвентаря на николаю(мне) лень его писать
+
+
 
 def terminate():
     pygame.quit()
@@ -225,13 +240,15 @@ while running:
                 pressed_down = False
 
             elif event.key == pygame.K_i:
-                proverka_inv += 1
+
                 if proverka_inv % 2 == 0:
                     inv_sprite.rect.x = 4000
                     inv_sprite.rect.y = -4000
                 else:
                     inv_sprite.rect.x = 0
                     inv_sprite.rect.y = 0
+
+                proverka_inv += 1
 
 
 
