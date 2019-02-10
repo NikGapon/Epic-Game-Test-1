@@ -49,6 +49,30 @@ inv_sprite.rect = inv_sprite.image.get_rect()
 
 inv_group.add(inv_sprite)
 
+
+class Hero:
+    def __init__(self, class_hero):
+
+        self.inv_hero = []
+        self.ekip_hero = []  # заполнит после реализации классов персонажей
+        self.class_hero = class_hero
+        self.lvl_hero = None
+
+
+
+    def open_inv(self):
+        return self.inv_hero
+
+    def apend_inv_hero(self, lot):
+        if len(self.inv_hero) <= 20:
+            self.inv_hero.append(lot)
+        else:
+            pass  # тут должно быть сообщение о  заролнености инвентаря на николаю(мне) лень его писать
+
+
+
+
+
 def class_select_screen():
     fon = pygame.transform.scale(load_image('menu_background.jpg'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
@@ -190,24 +214,7 @@ class Monster(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(
             TILE_WIDTH * x + 15, TILE_HEIGHT * y + 5)
 
-class Hero:
-    def __init__(self):
 
-        self.inv_hero = []
-        self.ekip_hero = []  # заполнит после реализации классов персонажей
-        self.class_hero = None
-        self.lvl_hero = None
-
-
-
-    def open_inv(self):
-        return self.inv_hero
-
-    def apend_hero(self, lot):
-        if len(self.inv_hero) <= 20:
-            self.inv_hero.append(lot)
-        else:
-            pass  # тут должно быть сообщение о  заролнености инвентаря на николаю(мне) лень его писать
 
 
 class Player(AnimatedSprite):
@@ -231,23 +238,6 @@ class Player(AnimatedSprite):
         self.image = self.frames[self.cur_frame]
 
 
-class Inv(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__(all_sprites)
-        self.proverka = 1
-        self.start_y = -4000
-        self.start_x = 4000
-        self.x = 0
-        self.y = 0
-
-    def upd(self):
-        self.proverka += 1
-        if self.proverka % 2 == 0:
-            inv_sprite.rect.x = self.start_x
-            inv_sprite.rect.y = self.start_y
-        else:
-            inv_sprite.rect.x = self.x
-            inv_sprite.rect.y = self.y
 
 
 
@@ -258,6 +248,7 @@ player = generate_level(level)
 total_level_width = len(level[0]) * 40
 total_level_height = len(level) * 40
 
+Player_Hero = Hero(player_class)
 
 pressed_left = False
 pressed_right = False
@@ -265,95 +256,118 @@ pressed_up = False
 pressed_down = False
 running = True
 while running:
+    if proverka_inv % 2 == 0:
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.KEYDOWN:  # check for key presses
-            if event.key == pygame.K_LEFT or event.key == pygame.K_a:# left arrow turns left
-                pressed_left = True
-            elif event.key == pygame.K_RIGHT or event.key == pygame.K_d: # right arrow turns right
-                pressed_right = True
-            elif event.key == pygame.K_UP or event.key == pygame.K_w:  # up arrow goes up
-                pressed_up = True
-            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:  # down arrow goes down
-                pressed_down = True
-        elif event.type == pygame.KEYUP:  # check for key releases
-            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                player.update([load_image('animations\\{}_left_2.png'.format(player_class))])# left arrow turns left
-                pressed_left = False
-            elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                player.update([load_image('animations\\{}_right_2.png'.format(player_class))])# right arrow turns right
-                pressed_right = False
-            elif event.key == pygame.K_UP or event.key == pygame.K_w:
-                player.update([load_image('animations\\{}_up_2.png'.format(player_class))])# up arrow goes up
-                pressed_up = False
-            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                player.update([load_image('animations\\{}_down_2.png'.format(player_class))])# down arrow goes down
-                pressed_down = False
-            elif event.key == pygame.K_i:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYUP:  # check for key releases
 
-                if proverka_inv % 2 == 0:
-                    inv_sprite.rect.x = 4000
-                    inv_sprite.rect.y = -4000
-                else:
-                    inv_sprite.rect.x = 0
-                    inv_sprite.rect.y = 0
-                    # while proverka_inv % 2 != 0:
-                    #    print(11)
-                proverka_inv += 1
+                if event.key == pygame.K_i:
+                    if proverka_inv % 2 == 0:
+                        inv_sprite.rect.x = 4000
+                        inv_sprite.rect.y = -4000
+                    else:
+                        inv_sprite.rect.x = 0
+                        inv_sprite.rect.y = 0
 
-    # In your game loop, check for key states:
-    if pressed_left:
-        player.update(
-            [load_image('animations\\{}_left_1.png'.format(player_class)),
-             load_image('animations\\{}_left_2.png'.format(player_class)),
-             load_image('animations\\{}_left_3.png'.format(player_class)),
-             load_image('animations\\{}_left_2.png'.format(player_class))])
-        player.rect.x -= STEP
-    if pressed_right:
-        player.update(
-            [load_image('animations\\{}_right_1.png'.format(player_class)),
-             load_image('animations\\{}_right_2.png'.format(player_class)),
-             load_image('animations\\{}_right_3.png'.format(player_class)),
-             load_image('animations\\{}_right_2.png'.format(player_class))])
-        player.rect.x += STEP
-    if pressed_up:
-        player.update(
-            [load_image('animations\\{}_up_1.png'.format(player_class)),
-             load_image('animations\\{}_up_2.png'.format(player_class)),
-             load_image('animations\\{}_up_3.png'.format(player_class)),
-             load_image('animations\\{}_up_2.png'.format(player_class))])
-        player.rect.y -= STEP
-    if pressed_down:
-        player.update(
-            [load_image('animations\\{}_down_1.png'.format(player_class)),
-             load_image('animations\\{}_down_2.png'.format(player_class)),
-             load_image('animations\\{}_down_3.png'.format(player_class)),
-             load_image('animations\\{}_down_2.png'.format(player_class))])
-        player.rect.y += STEP
+                        inv_print = Player_Hero.open_inv()
+
+                        
 
 
-    for wall in walls_group:
-        player.collide(wall)
-    if player.rect.x > 980 and location == 0:
-        location = 1
-        level = load_level('levelex.txt')
-        tiles_group.empty()
-        walls_group.empty()
-        monster.empty()
-        player_group.empty()
-        player = generate_level(level)
 
-    if player.rect.x < 0 and location == 1:
-        location = 0
 
-        level = load_level('test_world.txt')
-        tiles_group.empty()
-        walls_group.empty()
-        monster.empty()
-        player_group.empty()
-        player = generate_level(level)
+                    proverka_inv += 1
+
+    elif proverka_inv % 2 != 0:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN:  # check for key presses
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:# left arrow turns left
+                    pressed_left = True
+                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d: # right arrow turns right
+                    pressed_right = True
+                elif event.key == pygame.K_UP or event.key == pygame.K_w:  # up arrow goes up
+                    pressed_up = True
+                elif event.key == pygame.K_DOWN or event.key == pygame.K_s:  # down arrow goes down
+                    pressed_down = True
+            elif event.type == pygame.KEYUP:  # check for key releases
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                    player.update([load_image('animations\\{}_left_2.png'.format(player_class))])# left arrow turns left
+                    pressed_left = False
+                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                    player.update([load_image('animations\\{}_right_2.png'.format(player_class))])# right arrow turns right
+                    pressed_right = False
+                elif event.key == pygame.K_UP or event.key == pygame.K_w:
+                    player.update([load_image('animations\\{}_up_2.png'.format(player_class))])# up arrow goes up
+                    pressed_up = False
+                elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                    player.update([load_image('animations\\{}_down_2.png'.format(player_class))])# down arrow goes down
+                    pressed_down = False
+                elif event.key == pygame.K_i:
+
+                    if proverka_inv % 2 == 0:
+                        inv_sprite.rect.x = 4000
+                        inv_sprite.rect.y = -4000
+                    else:
+                        inv_sprite.rect.x = 0
+                        inv_sprite.rect.y = 0
+
+                    proverka_inv += 1
+
+        # In your game loop, check for key states:
+        if pressed_left:
+            player.update(
+                [load_image('animations\\{}_left_1.png'.format(player_class)),
+                 load_image('animations\\{}_left_2.png'.format(player_class)),
+                 load_image('animations\\{}_left_3.png'.format(player_class)),
+                 load_image('animations\\{}_left_2.png'.format(player_class))])
+            player.rect.x -= STEP
+        if pressed_right:
+            player.update(
+                [load_image('animations\\{}_right_1.png'.format(player_class)),
+                 load_image('animations\\{}_right_2.png'.format(player_class)),
+                 load_image('animations\\{}_right_3.png'.format(player_class)),
+                 load_image('animations\\{}_right_2.png'.format(player_class))])
+            player.rect.x += STEP
+        if pressed_up:
+            player.update(
+                [load_image('animations\\{}_up_1.png'.format(player_class)),
+                 load_image('animations\\{}_up_2.png'.format(player_class)),
+                 load_image('animations\\{}_up_3.png'.format(player_class)),
+                 load_image('animations\\{}_up_2.png'.format(player_class))])
+            player.rect.y -= STEP
+        if pressed_down:
+            player.update(
+                [load_image('animations\\{}_down_1.png'.format(player_class)),
+                 load_image('animations\\{}_down_2.png'.format(player_class)),
+                 load_image('animations\\{}_down_3.png'.format(player_class)),
+                 load_image('animations\\{}_down_2.png'.format(player_class))])
+            player.rect.y += STEP
+
+
+        for wall in walls_group:
+            player.collide(wall)
+        if player.rect.x > 980 and location == 0:
+            location = 1
+            level = load_level('levelex.txt')
+            tiles_group.empty()
+            walls_group.empty()
+            monster.empty()
+            player_group.empty()
+            player = generate_level(level)
+
+        if player.rect.x < 0 and location == 1:
+            location = 0
+
+            level = load_level('test_world.txt')
+            tiles_group.empty()
+            walls_group.empty()
+            monster.empty()
+            player_group.empty()
+            player = generate_level(level)
     screen.fill(pygame.Color('black'))
     tiles_group.draw(screen)
     walls_group.draw(screen)
