@@ -13,14 +13,18 @@ TILE_WIDTH = TILE_HEIGHT = 90
 inv_open = 1
 proverka_inv = 1
 
+location = 0
+
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 timer = pygame.time.Clock()
 
 
 all_sprites = pygame.sprite.Group()
+monster = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
+walls_group = pygame.sprite.Group()
 inv_group = pygame.sprite.Group()
 
 
@@ -37,7 +41,6 @@ def load_image(name, colorkey=None):
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey)
     return image
-
 inv_sprite = pygame.sprite.Sprite()
 
 inv_sprite.image = load_image("inv v2.png")
@@ -46,21 +49,46 @@ inv_sprite.rect = inv_sprite.image.get_rect()
 
 inv_group.add(inv_sprite)
 
-inv_sprite.rect.x = 4000
-inv_sprite.rect.y = -4000
+def class_select_screen():
+    fon = pygame.transform.scale(load_image('menu_background.jpg'), (WIDTH, HEIGHT))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 100)
+    warrior = pygame.transform.scale(load_image('animations\\warrior_down_2.png'), (152, 190))
+    wizard = pygame.transform.scale(load_image('animations\\wizard_down_2.png'), (169, 190))
+    archer = pygame.transform.scale(load_image('animations\\archer_down_2.png'), (155, 190))
+    screen.blit(wizard, (450, 300))
+    screen.blit(warrior, (250, 300))
+    screen.blit(archer, (650, 300))
+    screen.blit(font.render("Select the class", 1, pygame.Color('yellow')), (250, 100))
+    font = pygame.font.Font(None, 50)
+    screen.blit(font.render("Warrior", 1, pygame.Color('brown')), (265, 500))
+    screen.blit(font.render("Wizard", 1, pygame.Color('purple')), (475, 500))
+    screen.blit(font.render("Archer", 1, pygame.Color('green')), (670, 500))
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.pos[0] > 200 and event.pos[0] < 401 and event.pos[1] < 491 and event.pos[1] > 300:
+                    return 'warrior'
+                elif event.pos[0] > 456 and event.pos[0] < 613 and event.pos[1] < 491 and event.pos[1] > 300:
+                    return 'wizard'
+                elif event.pos[0] > 649 and event.pos[0] < 804 and event.pos[1] < 491 and event.pos[1] > 300:
+                    return 'archer'
+        pygame.display.flip()
+        clock.tick(FPS)
+
 
 def start_screen():
-    intro_text = ["ЗАСТАВКА", "",
-                  "Правила игры",
-                  "Если в правилах несколько строк,",
-                  "приходится выводить их построчно"]
+    intro_text = ["Epic unreal rpg game", "",
+                  "Press any key"]
 
     fon = pygame.transform.scale(load_image('menu_background.jpg'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 30)
+    font = pygame.font.Font(None, 100)
     text_coord = 50
     for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('black'))
+        string_rendered = font.render(line, 1, pygame.Color('green'))
         intro_rect = string_rendered.get_rect()
         text_coord += 10
         intro_rect.top = text_coord
@@ -77,6 +105,90 @@ def start_screen():
         pygame.display.flip()
         clock.tick(FPS)
 
+inv_sprite.rect.x = 4000
+inv_sprite.rect.y = -4000
+
+def terminate():
+    pygame.quit()
+    sys.exit()
+
+
+def load_level(filename):
+    filename = 'data/' + filename
+    with open(filename, 'r') as map_file:
+        level_map = [list(line.strip()) for line in map_file]
+    max_width = max(map(len, level_map))
+    map(lambda x: x.ljust(max_width, '.'), level_map)
+    return list(level_map)
+
+
+def generate_level(level):
+    new_player, x, y = None, None, None
+    level[random.randint(0, 4)][random.randint(0, 10)] = '!'
+    for y in range(len(level)):
+        for x in range(len(level[y])):
+            Tile('empty', x, y)
+            if level[y][x] == '#':
+                Tile('road', x, y)
+            elif level[y][x] == '@':
+                if location == 1:
+                    Tile('road', x, y)
+                elif location == 0:
+                    Tile('empty', x, y)
+                new_player = Player(x, y - 0.1)
+            elif level[y][x] == '&':
+                Wall(x, y)
+            elif level[y][x] == '!':
+                Monster(x, y)
+
+
+    return new_player
+
+
+start_screen()
+player_class = class_select_screen()
+
+tile_images = {
+    'road': load_image('road.png'),
+    'empty': load_image('grass1.png'),
+    'player': load_image('animations\\{}_down_2.png'.format(player_class))
+}
+
+
+class Tile(pygame.sprite.Sprite):
+    def __init__(self, tile_type, pos_x, pos_y):
+        super().__init__(tiles_group, all_sprites)
+        self.image = tile_images[tile_type]
+        self.rect = self.image.get_rect().move(TILE_WIDTH * pos_x,
+                                               TILE_HEIGHT * pos_y)
+
+class Wall(Tile):
+    def __init__(self, pos_x, pos_y):
+        pygame.sprite.Sprite.__init__(self, walls_group)
+        self.image = load_image('wood.png')
+        self.rect = self.image.get_rect().move(TILE_WIDTH * pos_x,
+                                               TILE_HEIGHT * pos_y)
+
+class AnimatedSprite(pygame.sprite.Sprite):
+    def __init__(self, frames, x, y):
+        super().__init__(all_sprites)
+        self.frames = frames
+        self.cur_frame = 0
+        self.image = self.frames[self.cur_frame]
+        self.rect = self.image.get_rect()
+        self.rect.move(x, y)
+
+    def update(self):
+        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
+        self.image = self.frames[self.cur_frame]
+
+
+class Monster(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__(monster, all_sprites)
+        self.image = load_image('monster.png')
+        self.rect = self.image.get_rect().move(
+            TILE_WIDTH * x + 15, TILE_HEIGHT * y + 5)
 
 class Hero:
     def __init__(self):
@@ -98,48 +210,25 @@ class Hero:
             pass  # тут должно быть сообщение о  заролнености инвентаря на николаю(мне) лень его писать
 
 
+class Player(AnimatedSprite):
+    def __init__(self, x, y):
+        self.frames = []
+        self.cur_frame = 0
+        self.image = tile_images['player']
+        pygame.sprite.Sprite.__init__(self, player_group)
+        self.rect = self.image.get_rect().move(
+            TILE_WIDTH * x + 15, TILE_HEIGHT * y + 5)
 
-def terminate():
-    pygame.quit()
-    sys.exit()
+    def collide(self, wall):
+        if pygame.sprite.collide_rect(self, wall):
+            pass
 
+    def update(self, frames):
+        clock.tick(15)
+        self.frames = frames
 
-def load_level(filename):
-    filename = 'data/' + filename
-    with open(filename, 'r') as map_file:
-        level_map = [line.strip() for line in map_file]
-
-    max_width = max(map(len, level_map))
-    return list(map(lambda x: x.ljust(max_width, '.'), level_map))
-
-
-def generate_level(level):
-    new_player, x, y = None, None, None
-    for y in range(len(level)):
-        for x in range(len(level[y])):
-            if level[y][x] == '.':
-                Tile('empty', x, y)
-            elif level[y][x] == '#':
-                Tile('wall', x, y)
-            elif level[y][x] == '@':
-                Tile('empty', x, y)
-                new_player = Player(x, y)
-    return new_player
-
-
-tile_images = {
-    'wall': load_image('wall.png'),
-    'empty': load_image('grass1.png'),
-    'player': load_image('animations\\down_2.png')
-}
-
-
-class Tile(pygame.sprite.Sprite):
-    def __init__(self, tile_type, pos_x, pos_y):
-        super().__init__(tiles_group, all_sprites)
-        self.image = tile_images[tile_type]
-        self.rect = self.image.get_rect().move(TILE_WIDTH * pos_x,
-                                               TILE_HEIGHT * pos_y)
+        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
+        self.image = self.frames[self.cur_frame]
 
 
 class Inv(pygame.sprite.Sprite):
@@ -163,41 +252,6 @@ class Inv(pygame.sprite.Sprite):
 
 
 
-
-
-class AnimatedSprite(pygame.sprite.Sprite):
-    def __init__(self, frames, x, y):
-        super().__init__(all_sprites)
-        self.frames = frames
-        self.cur_frame = 0
-        self.image = self.frames[self.cur_frame]
-        self.rect = self.image.get_rect()
-        self.rect.move(x, y)
-
-    def update(self):
-        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
-        self.image = self.frames[self.cur_frame]
-
-
-class Player(AnimatedSprite):
-    def __init__(self, x, y):
-        self.frames = []
-        self.cur_frame = 0
-        self.image = tile_images['player']
-        pygame.sprite.Sprite.__init__(self, player_group)
-        self.rect = self.image.get_rect().move(
-            TILE_WIDTH * x + 15, TILE_HEIGHT * y + 5)
-
-    def update(self, frames):
-        clock.tick(15)
-        self.frames = frames
-
-        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
-        self.image = self.frames[self.cur_frame]
-
-
-
-start_screen()
 level = load_level('test_world.txt')
 player = generate_level(level)
 
@@ -215,7 +269,6 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
         elif event.type == pygame.KEYDOWN:  # check for key presses
             if event.key == pygame.K_LEFT or event.key == pygame.K_a:# left arrow turns left
                 pressed_left = True
@@ -227,18 +280,17 @@ while running:
                 pressed_down = True
         elif event.type == pygame.KEYUP:  # check for key releases
             if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                player.update([load_image('animations\\left_2.png')])# left arrow turns left
-                pressed_left = False							
+                player.update([load_image('animations\\{}_left_2.png'.format(player_class))])# left arrow turns left
+                pressed_left = False
             elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                player.update([load_image('animations\\right_2.png')])# right arrow turns right
+                player.update([load_image('animations\\{}_right_2.png'.format(player_class))])# right arrow turns right
                 pressed_right = False
             elif event.key == pygame.K_UP or event.key == pygame.K_w:
-                player.update([load_image('animations\\up_2.png')])# up arrow goes up
+                player.update([load_image('animations\\{}_up_2.png'.format(player_class))])# up arrow goes up
                 pressed_up = False
             elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                player.update([load_image('animations\\down_2.png')])# down arrow goes down
+                player.update([load_image('animations\\{}_down_2.png'.format(player_class))])# down arrow goes down
                 pressed_down = False
-
             elif event.key == pygame.K_i:
 
                 if proverka_inv % 2 == 0:
@@ -247,44 +299,68 @@ while running:
                 else:
                     inv_sprite.rect.x = 0
                     inv_sprite.rect.y = 0
-                    #while proverka_inv % 2 != 0:
+                    # while proverka_inv % 2 != 0:
                     #    print(11)
                 proverka_inv += 1
-
-
 
     # In your game loop, check for key states:
     if pressed_left:
         player.update(
-            [load_image('animations\\left_1.png'), load_image('animations\\left_2.png'),
-             load_image('animations\\left_3.png'),
-             load_image('animations\\left_2.png')])
+            [load_image('animations\\{}_left_1.png'.format(player_class)),
+             load_image('animations\\{}_left_2.png'.format(player_class)),
+             load_image('animations\\{}_left_3.png'.format(player_class)),
+             load_image('animations\\{}_left_2.png'.format(player_class))])
         player.rect.x -= STEP
     if pressed_right:
         player.update(
-            [load_image('animations\\right_1.png'), load_image('animations\\right_2.png'),
-             load_image('animations\\right_3.png'),
-             load_image('animations\\right_2.png')])
+            [load_image('animations\\{}_right_1.png'.format(player_class)),
+             load_image('animations\\{}_right_2.png'.format(player_class)),
+             load_image('animations\\{}_right_3.png'.format(player_class)),
+             load_image('animations\\{}_right_2.png'.format(player_class))])
         player.rect.x += STEP
     if pressed_up:
         player.update(
-            [load_image('animations\\up_1.png'), load_image('animations\\up_2.png'), load_image('animations\\up_3.png'),
-             load_image('animations\\up_2.png')])
+            [load_image('animations\\{}_up_1.png'.format(player_class)),
+             load_image('animations\\{}_up_2.png'.format(player_class)),
+             load_image('animations\\{}_up_3.png'.format(player_class)),
+             load_image('animations\\{}_up_2.png'.format(player_class))])
         player.rect.y -= STEP
     if pressed_down:
         player.update(
-            [load_image('animations\\down_1.png'), load_image('animations\\down_2.png'),
-             load_image('animations\\down_3.png'), load_image('animations\\down_2.png')])
+            [load_image('animations\\{}_down_1.png'.format(player_class)),
+             load_image('animations\\{}_down_2.png'.format(player_class)),
+             load_image('animations\\{}_down_3.png'.format(player_class)),
+             load_image('animations\\{}_down_2.png'.format(player_class))])
         player.rect.y += STEP
 
-    screen.fill(pygame.Color('black'))
-    if player.rect.x > 980:
+
+    for wall in walls_group:
+        player.collide(wall)
+    if player.rect.x > 980 and location == 0:
+        location = 1
         level = load_level('levelex.txt')
+        tiles_group.empty()
+        walls_group.empty()
+        monster.empty()
         player_group.empty()
         player = generate_level(level)
+
+    if player.rect.x < 0 and location == 1:
+        location = 0
+
+        level = load_level('test_world.txt')
+        tiles_group.empty()
+        walls_group.empty()
+        monster.empty()
+        player_group.empty()
+        player = generate_level(level)
+    screen.fill(pygame.Color('black'))
     tiles_group.draw(screen)
+    walls_group.draw(screen)
+    monster.draw(screen)
     player_group.draw(screen)
     inv_group.draw(screen)
     pygame.display.flip()
     clock.tick(FPS)
-pygame.quit()
+
+terminate()
