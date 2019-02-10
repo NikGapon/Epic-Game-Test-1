@@ -28,6 +28,7 @@ walls_group = pygame.sprite.Group()
 inv_group = pygame.sprite.Group()
 
 
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     try:
@@ -41,13 +42,21 @@ def load_image(name, colorkey=None):
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey)
     return image
+
 inv_sprite = pygame.sprite.Sprite()
-
-inv_sprite.image = load_image("inv v2.png")
-
+inv_sprite.image = load_image("inv v3.png")
 inv_sprite.rect = inv_sprite.image.get_rect()
-
 inv_group.add(inv_sprite)
+inv_sprite.rect.x = 4000
+inv_sprite.rect.y = -4000
+
+#XP_boots_25 = pygame.sprite.Sprite()
+#XP_boots_25 = load_image('Xp_boost_+25.png')
+#XP_boots_25.rect = XP_boots_25.image.get_rect()
+#inv_group.add(XP_boots_25)
+#XP_boots_25.rect = 4000
+#XP_boots_25.rect = -4000
+
 
 
 class Hero:
@@ -129,8 +138,7 @@ def start_screen():
         pygame.display.flip()
         clock.tick(FPS)
 
-inv_sprite.rect.x = 4000
-inv_sprite.rect.y = -4000
+
 
 def terminate():
     pygame.quit()
@@ -241,7 +249,6 @@ class Player(AnimatedSprite):
 
 
 
-
 level = load_level('test_world.txt')
 player = generate_level(level)
 
@@ -249,6 +256,9 @@ total_level_width = len(level[0]) * 40
 total_level_height = len(level) * 40
 
 Player_Hero = Hero(player_class)
+
+
+
 
 pressed_left = False
 pressed_right = False
@@ -272,10 +282,6 @@ while running:
                         inv_sprite.rect.y = 0
 
                         inv_print = Player_Hero.open_inv()
-
-                        
-
-
 
 
                     proverka_inv += 1
@@ -314,6 +320,9 @@ while running:
                     else:
                         inv_sprite.rect.x = 0
                         inv_sprite.rect.y = 0
+                        
+
+
 
                     proverka_inv += 1
 
