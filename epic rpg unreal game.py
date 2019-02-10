@@ -40,7 +40,7 @@ def load_image(name, colorkey=None):
 
 inv_sprite = pygame.sprite.Sprite()
 
-inv_sprite.image = load_image("inv v1.png")
+inv_sprite.image = load_image("inv v2.png")
 
 inv_sprite.rect = inv_sprite.image.get_rect()
 
