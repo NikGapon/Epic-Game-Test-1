@@ -251,8 +251,8 @@ class inv_eqip_upd(pygame.sprite.Sprite):
     def __init__(self, frames_name_save):
         super().__init__(inv_group)
         #self.freme = pygame.sprite.Sprite()
-        self.freme = load_image(frames_name_save)
-        self.rect = self.freme.get_rect()
+        self.image = load_image(frames_name_save)
+        self.rect = self.image.get_rect()
         #pygame.sprite.Sprite.__init__(self, inv_group)
         self.rect.x = 4000
         self.rect.y = -4000
