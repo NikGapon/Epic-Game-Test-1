@@ -253,6 +253,7 @@ class inv_eqip_upd(pygame.sprite.Sprite):
         #self.freme = pygame.sprite.Sprite()
         self.image = load_image(frames_name_save)
         self.rect = self.image.get_rect()
+
         #pygame.sprite.Sprite.__init__(self, inv_group)
         self.rect.x = 4000
         self.rect.y = -4000
@@ -260,6 +261,11 @@ class inv_eqip_upd(pygame.sprite.Sprite):
     def upd(self, x, y):
         self.rect.x = x
         self.rect.y = y
+
+    def upd_out(self):
+        self.rect.x = 4000
+        self.rect.y = -4000
+
 
 
 level = load_level('test_world.txt')
@@ -271,10 +277,18 @@ total_level_height = len(level) * 40
 Player_Hero = Hero(player_class)
 
 
-XP_boots_25 = inv_eqip_upd('Xp_boost_+25.png')
+# ВРЕМЯ ПРЕДМЕТОВ
 
-#--------------------------------
-Player_Hero.apend_inv_hero(XP_boots_25)
+XP_boots_25_1 = inv_eqip_upd('Xp_boost_+25.png')
+XP_boots_10_1 = inv_eqip_upd('Xp_boost_+10.png')
+
+#--------------TEST--------------
+Player_Hero.apend_inv_hero(XP_boots_25_1)
+Player_Hero.apend_inv_hero(XP_boots_10_1)
+#------------
+
+
+
 #--------------------------------
 
 
@@ -299,19 +313,19 @@ while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+                
             elif event.type == pygame.KEYUP:  # check for key releases
 
                 if event.key == pygame.K_i:
                     if proverka_inv % 2 == 0:
                         inv_sprite.rect.x = 4000
                         inv_sprite.rect.y = -4000
-                    else:
-                        inv_sprite.rect.x = 0
-                        inv_sprite.rect.y = 0
-
                         inv_print = Player_Hero.open_inv()
                         for n in inv_print:
-                            n.upd(100, 100)
+                            n.upd_out()
+
+
+
 
 
 
@@ -345,13 +359,21 @@ while running:
                     pressed_down = False
                 elif event.key == pygame.K_i:
 
-                    if proverka_inv % 2 == 0:
-                        inv_sprite.rect.x = 4000
-                        inv_sprite.rect.y = -4000
-                    else:
+                    if proverka_inv % 2 != 0:
+
                         inv_sprite.rect.x = 0
                         inv_sprite.rect.y = 0
 
+                        i = 0
+                        inv_print = Player_Hero.open_inv()
+
+                        for n in inv_print:
+
+
+                            n.upd(0, i)
+
+
+                            i += 25
 
 
 
