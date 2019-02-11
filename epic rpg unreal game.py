@@ -247,6 +247,19 @@ class Player(AnimatedSprite):
 
 
 
+class inv_eqip_upd(pygame.sprite.Sprite):
+    def __init__(self, frames_name_save):
+        super().__init__(inv_group)
+        #self.freme = pygame.sprite.Sprite()
+        self.freme = load_image(frames_name_save)
+        self.rect = self.freme.get_rect()
+        #pygame.sprite.Sprite.__init__(self, inv_group)
+        self.rect.x = 4000
+        self.rect.y = -4000
+
+    def upd(self, x, y):
+        self.rect.x = x
+        self.rect.y = y
 
 
 level = load_level('test_world.txt')
@@ -256,6 +269,21 @@ total_level_width = len(level[0]) * 40
 total_level_height = len(level) * 40
 
 Player_Hero = Hero(player_class)
+
+
+XP_boots_25 = inv_eqip_upd('Xp_boost_+25.png')
+
+#--------------------------------
+Player_Hero.apend_inv_hero(XP_boots_25)
+#--------------------------------
+
+
+
+
+
+
+
+
 
 
 
@@ -282,6 +310,9 @@ while running:
                         inv_sprite.rect.y = 0
 
                         inv_print = Player_Hero.open_inv()
+                        for n in inv_print:
+                            n.upd(100, 100)
+
 
 
                     proverka_inv += 1
@@ -320,7 +351,7 @@ while running:
                     else:
                         inv_sprite.rect.x = 0
                         inv_sprite.rect.y = 0
-                        
+
 
 
 
