@@ -79,14 +79,16 @@ class Hero:
             pass  # тут должно быть сообщение о  заролнености инвентаря на николаю(мне) лень его писать
 
     def use_item(self, item_inv):
-        for u in self.inv_hero:
-            if self.inv_hero[item_inv] == u:
-                y = u.baff
-                u.upd_out()
-        baff_tec_tec_item = y
-        del self.inv_hero[item_inv]
-        if baff_tec_tec_item[0] == 'XP':
-            self.hp += baff_tec_tec_item[1]
+        if len(self.inv_hero) != 0 and item_inv < len(self.inv_hero):
+            for u in self.inv_hero:
+                if self.inv_hero[item_inv] == u:
+                    y = u.baff
+                    u.upd_out()
+            baff_tec_tec_item = y
+            del self.inv_hero[item_inv]
+            if baff_tec_tec_item[0] == 'XP':
+                self.hp += baff_tec_tec_item[1]
+
 
 
     def hit(self, hit):
@@ -288,7 +290,7 @@ class inv_eqip_upd(pygame.sprite.Sprite):
 
 
 def use_inv(m_pos):
-    tec_item = (m_pos[1] // 25)
+    tec_item = (m_pos[1] // 50)
 
     return tec_item
 
@@ -306,8 +308,8 @@ Player_Hero = Hero(player_class)
 
 # ВРЕМЯ ПРЕДМЕТОВ
 
-XP_boots_25_1 = inv_eqip_upd('Xp_boost_+25.png', ['XP', 25])
-XP_boots_10_1 = inv_eqip_upd('Xp_boost_+10.png', ['XP', 25])
+XP_boots_25_1 = inv_eqip_upd('Xp_boost_+25_v2.png', ['XP', 25])
+XP_boots_10_1 = inv_eqip_upd('Xp_boost_+10_v2.png', ['XP', 25])
 
 #--------------TEST--------------
 Player_Hero.apend_inv_hero(XP_boots_25_1)
@@ -341,20 +343,32 @@ while running:
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                m = use_inv(event.pos)
-                Player_Hero.use_item(m)
+                if event.pos[0] >= 975 and event.pos[1] <= 40:
+                    proverka_inv += 1
+
+                    inv_sprite.rect.x = 4000
+                    inv_sprite.rect.y = -4000
+                    inv_print = Player_Hero.open_inv()
+                    for n in inv_print:
+                        n.upd_out()
 
 
-                inv_sprite.rect.x = 0
-                inv_sprite.rect.y = 0
+                else:
+                    m = use_inv(event.pos)
 
-                bag_with_items = 0
-                inv_print = Player_Hero.open_inv()
+                    Player_Hero.use_item(m)
 
-                for n in inv_print:
-                    n.upd(0, bag_with_items * 25)
 
-                    bag_with_items += 1
+                    inv_sprite.rect.x = 0
+                    inv_sprite.rect.y = 0
+
+                    bag_with_items = 0
+                    inv_print = Player_Hero.open_inv()
+
+                    for n in inv_print:
+                        n.upd(0, bag_with_items * 50)
+
+                        bag_with_items += 1
 
             elif event.type == pygame.KEYUP:  # check for key releases
 
@@ -412,7 +426,7 @@ while running:
                         for n in inv_print:
 
 
-                            n.upd(0, bag_with_items * 25)
+                            n.upd(0, bag_with_items * 50)
 
 
                             bag_with_items += 1
