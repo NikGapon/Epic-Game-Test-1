@@ -13,6 +13,8 @@ TILE_WIDTH = TILE_HEIGHT = 90
 inv_open = 1
 proverka_inv = 1
 
+
+
 location = 0
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -20,12 +22,14 @@ clock = pygame.time.Clock()
 timer = pygame.time.Clock()
 
 
+shop_group = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
-monster = pygame.sprite.Group()
+monsters_group = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 walls_group = pygame.sprite.Group()
 inv_group = pygame.sprite.Group()
+decor_group = pygame.sprite.Group()
 
 
 
@@ -89,14 +93,11 @@ class Hero:
             if baff_tec_tec_item[0] == 'XP':
                 self.hp += baff_tec_tec_item[1]
 
-
-
     def hit(self, hit):
         self.hp -= hit
 
     def heal(self, heal):
         self.hp += heal
-
 
 
 
@@ -174,23 +175,30 @@ def load_level(filename):
 
 def generate_level(level):
     new_player, x, y = None, None, None
-    level[random.randint(0, 4)][random.randint(0, 10)] = '!'
+    m_x, m_y = random.randint(0, 4), random.randint(0, 10)
+    if location != 0 and location != 1:
+        if level[m_x][m_y] not in '@&#l':
+            level[m_x][m_y] = '!'
     for y in range(len(level)):
         for x in range(len(level[y])):
             Tile('empty', x, y)
             if level[y][x] == '#':
                 Tile('road', x, y)
             elif level[y][x] == '@':
+                Tile('road', x, y)
+                new_player = Player(x, y)
+            elif level[y][x] == '&':
+                Wall(x, y)
+            elif level[y][x] == '!':
                 if location == 1:
                     Tile('road', x, y)
                 elif location == 0:
                     Tile('empty', x, y)
-                new_player = Player(x, y - 0.1)
-            elif level[y][x] == '&':
-                Wall(x, y)
-            elif level[y][x] == '!':
                 Monster(x, y)
-
+            elif level[y][x] == 'l':
+                Shop(x, y)
+            elif level[y][x] == 'o':
+                Decor(x, y)
 
     return new_player
 
@@ -203,6 +211,19 @@ tile_images = {
     'empty': load_image('grass1.png'),
     'player': load_image('animations\\{}_down_2.png'.format(player_class))
 }
+
+class Decor(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__(decor_group, all_sprites)
+        self.image = load_image('vegetables.png')
+        self.rect = self.image.get_rect().move(TILE_WIDTH * x, TILE_HEIGHT * y)
+
+
+class Shop(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__(shop_group, all_sprites)
+        self.image = load_image('lavka.png')
+        self.rect = self.image.get_rect().move(TILE_WIDTH * x, TILE_HEIGHT * y)
 
 
 class Tile(pygame.sprite.Sprite):
@@ -228,17 +249,14 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.move(x, y)
 
-    def update(self):
-        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
-        self.image = self.frames[self.cur_frame]
 
 
 class Monster(pygame.sprite.Sprite):
     def __init__(self, x, y):
-        super().__init__(monster, all_sprites)
+        super().__init__(monsters_group, all_sprites)
         self.image = load_image('monster.png')
         self.rect = self.image.get_rect().move(
-            TILE_WIDTH * x + 15, TILE_HEIGHT * y + 5)
+            TILE_WIDTH * x, TILE_HEIGHT * y)
 
 
 
@@ -252,9 +270,19 @@ class Player(AnimatedSprite):
         self.rect = self.image.get_rect().move(
             TILE_WIDTH * x + 15, TILE_HEIGHT * y + 5)
 
-    def collide(self, wall):
-        if pygame.sprite.collide_rect(self, wall):
-            pass
+    def collide(self, other):
+        if pygame.sprite.collide_rect(self, other):
+            if other.rect.x > self.rect.x:
+                self.rect.x -= 10
+
+            if other.rect.x < self.rect.x:
+                self.rect.x += 10
+
+            if other.rect.y > self.rect.y:
+                self.rect.y -= 10
+
+            if other.rect.y < self.rect.y:
+                self.rect.y += 10
 
     def update(self, frames):
         clock.tick(15)
@@ -296,12 +324,9 @@ def use_inv(m_pos):
 
 
 
-
-level = load_level('test_world.txt')
+level = load_level('test_world1.txt')
 player = generate_level(level)
 
-total_level_width = len(level[0]) * 40
-total_level_height = len(level) * 40
 
 Player_Hero = Hero(player_class)
 
@@ -319,7 +344,6 @@ Player_Hero.apend_inv_hero(XP_boots_10_1)
 
 
 #--------------------------------
-
 
 
 
@@ -358,7 +382,6 @@ while running:
 
                     Player_Hero.use_item(m)
 
-
                     inv_sprite.rect.x = 0
                     inv_sprite.rect.y = 0
 
@@ -379,11 +402,6 @@ while running:
                         inv_print = Player_Hero.open_inv()
                         for n in inv_print:
                             n.upd_out()
-
-
-
-
-
 
                     proverka_inv += 1
 
@@ -424,14 +442,9 @@ while running:
                         inv_print = Player_Hero.open_inv()
 
                         for n in inv_print:
-
-
                             n.upd(0, bag_with_items * 50)
 
-
                             bag_with_items += 1
-
-
 
                     proverka_inv += 1
 
@@ -466,30 +479,85 @@ while running:
             player.rect.y += STEP
 
 
-        for wall in walls_group:
-            player.collide(wall)
-        if player.rect.x > 980 and location == 0:
+
+
+
+        if player.rect.x > 980 and player.rect.y >= 305 and player.rect.y <= 375 and location == 0:
             location = 1
             level = load_level('levelex.txt')
+            decor_group.empty()
             tiles_group.empty()
             walls_group.empty()
-            monster.empty()
+            shop_group.empty()
+            monsters_group.empty()
             player_group.empty()
             player = generate_level(level)
+        if player.rect.x > 980:
+            player.rect.x -= 10
+        if player.rect.x < 0:
+            player.rect.x += 10
 
-        if player.rect.x < 0 and location == 1:
-            location = 0
 
-            level = load_level('test_world.txt')
+        if player.rect.x >= 975 and player.rect.y >= 305 and player.rect.y <= 375 and location == 1:
+            location = 2
+            level = load_level('city.txt')
+            decor_group.empty()
             tiles_group.empty()
+            shop_group.empty()
             walls_group.empty()
-            monster.empty()
+            monsters_group.empty()
+            player_group.empty()
+            player = generate_level(level)
+        if player.rect.x < 7 and player.rect.y >= 305 and player.rect.y <= 375 and location == 1:
+            location = 0
+            level = load_level('test_world2.txt')
+            decor_group.empty()
+            tiles_group.empty()
+            shop_group.empty()
+            walls_group.empty()
+            monsters_group.empty()
+            player_group.empty()
+            player = generate_level(level)
+        if player.rect.x < 7 and player.rect.y >= 305 and player.rect.y <= 375 and location == 0:
+            location = -1
+            level = load_level('monsters_place.txt')
+            decor_group.empty()
+            tiles_group.empty()
+            shop_group.empty()
+            walls_group.empty()
+            monsters_group.empty()
+            player_group.empty()
+            player = generate_level(level)
+        if player.rect.x >= 975 and player.rect.y >= 305 and player.rect.y <= 375 and location == -1:
+            location = 0
+            level = load_level('test_world1.txt')
+            decor_group.empty()
+            tiles_group.empty()
+            shop_group.empty()
+            walls_group.empty()
+            monsters_group.empty()
             player_group.empty()
             player = generate_level(level)
     screen.fill(pygame.Color('black'))
     tiles_group.draw(screen)
+
+    shop_group.draw(screen)
+
+    for monster in monsters_group:
+        player.collide(monster)
+
+    for shop in shop_group:
+        player.collide(shop)
+
+    for wall in walls_group:
+        player.collide(wall)
+
+    for d in decor_group:
+        player.collide(d)
+
+    decor_group.draw(screen)
+    monsters_group.draw(screen)
     walls_group.draw(screen)
-    monster.draw(screen)
     player_group.draw(screen)
     inv_group.draw(screen)
     pygame.display.flip()
