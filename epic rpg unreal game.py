@@ -5,7 +5,7 @@ import pygame
 
 pygame.init()
 
-FPS = 50
+FPS = 60
 WIDTH = 1024
 HEIGHT = 768
 STEP = 10
@@ -30,6 +30,7 @@ player_group = pygame.sprite.Group()
 walls_group = pygame.sprite.Group()
 inv_group = pygame.sprite.Group()
 decor_group = pygame.sprite.Group()
+fight_group = pygame.sprite.Group()
 
 
 
@@ -54,24 +55,18 @@ inv_group.add(inv_sprite)
 inv_sprite.rect.x = 4000
 inv_sprite.rect.y = -4000
 
-#XP_boots_25 = pygame.sprite.Sprite()
-#XP_boots_25 = load_image('Xp_boost_+25.png')
-#XP_boots_25.rect = XP_boots_25.image.get_rect()
-#inv_group.add(XP_boots_25)
-#XP_boots_25.rect = 4000
-#XP_boots_25.rect = -4000
+
 
 
 
 class Hero:
     def __init__(self, class_hero):
         self.hp = 100
+        self.mp = 100
         self.inv_hero = []
         self.ekip_hero = []  # заполнит после реализации классов персонажей
         self.class_hero = class_hero
         self.lvl_hero = None
-
-
 
     def open_inv(self):
         return self.inv_hero
@@ -98,6 +93,9 @@ class Hero:
 
     def heal(self, heal):
         self.hp += heal
+
+    def info_stat(self):
+        return self.hp, self.mp
 
 
 
@@ -322,6 +320,56 @@ def use_inv(m_pos):
 
     return tec_item
 
+class Naga:
+    def __init__(self):
+        super().__init__(fight_group)
+        self.hp_start = 100
+        self.skill = [0, 0, -25, 0, 0, 0, 10, 0,0, 0]
+        self.at = 10
+
+        self.image = load_image('monster.png')
+        self.rect = self.image.get_rect()
+        self.rect.x = 4000
+        self.rect.y = -4000
+
+    def upd(self, x, y):
+        self.rect.x = x
+        self.rect.y = y
+
+    def upd_out(self):
+        self.rect.x = 4000
+        self.rect.y = -4000
+
+    def fight_stat(self):
+        return self.hp_start, self.at, self.skill
+
+
+class Fight:
+    def __init__(self):
+        super().__init__(fight_group)
+
+
+        self.image = load_image('fight v1.png')
+        self.rect = self.image.get_rect()
+        self.rect.x = 4000
+        self.rect.y = -4000
+        self.hp_hero = None
+        self.mp_hero = None
+
+        self.hp_monster = None
+        self.skill_monster = None
+        self.atc_monster = None
+
+    def fight_new(self, hp_hero, mp_hero, hp_monster,  atc_monster, skill_monster,):
+        self.hp_hero = hp_hero
+        self.mp_hero = mp_hero
+
+        self.hp_monster = hp_monster
+        self.skill_monster = skill_monster
+        self.atc_monster = atc_monster
+
+        self.rect.x = 0
+        self.rect.y = 0
 
 
 level = load_level('test_world1.txt')
@@ -336,22 +384,22 @@ Player_Hero = Hero(player_class)
 XP_boots_25_1 = inv_eqip_upd('Xp_boost_+25_v2.png', ['XP', 25])
 XP_boots_10_1 = inv_eqip_upd('Xp_boost_+10_v2.png', ['XP', 25])
 
-#--------------TEST--------------
+#--------------START--------------
 Player_Hero.apend_inv_hero(XP_boots_25_1)
 Player_Hero.apend_inv_hero(XP_boots_10_1)
 #------------
 
-
-
-#--------------------------------
-
+Naga_m = Naga
 
 
 
 
 
 
+fight_ckek = 0
+fight_monster_name = None
 
+Fight_Go = Fight
 
 
 
@@ -361,7 +409,14 @@ pressed_up = False
 pressed_down = False
 running = True
 while running:
-    if proverka_inv % 2 == 0:
+    if fight_ckek == 1:
+        if fight_monster_name == 'Naga':
+            player_tic_hp, player_tic_mp = Player_Hero.info_stat()
+            Fight_Go.fight_new(player_tic_hp, player_tic_mp, )
+            fight_monster_name = 'fight_go'
+
+
+    elif proverka_inv % 2 == 0:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
