@@ -11,9 +11,8 @@ HEIGHT = 768
 STEP = 10
 TILE_WIDTH = TILE_HEIGHT = 90
 inv_open = 1
+
 proverka_inv = 1
-
-
 
 location = 0
 
@@ -33,7 +32,6 @@ decor_group = pygame.sprite.Group()
 fight_group = pygame.sprite.Group()
 
 
-
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     try:
@@ -48,15 +46,13 @@ def load_image(name, colorkey=None):
         image.set_colorkey(colorkey)
     return image
 
+
 inv_sprite = pygame.sprite.Sprite()
 inv_sprite.image = load_image("inv v3.png")
 inv_sprite.rect = inv_sprite.image.get_rect()
 inv_group.add(inv_sprite)
 inv_sprite.rect.x = 4000
 inv_sprite.rect.y = -4000
-
-
-
 
 
 class Hero:
@@ -96,7 +92,6 @@ class Hero:
 
     def info_stat(self):
         return self.hp, self.mp
-
 
 
 def class_select_screen():
@@ -156,7 +151,6 @@ def start_screen():
         clock.tick(FPS)
 
 
-
 def terminate():
     pygame.quit()
     sys.exit()
@@ -210,6 +204,7 @@ tile_images = {
     'player': load_image('animations\\{}_down_2.png'.format(player_class))
 }
 
+
 class Decor(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(decor_group, all_sprites)
@@ -231,12 +226,14 @@ class Tile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(TILE_WIDTH * pos_x,
                                                TILE_HEIGHT * pos_y)
 
+
 class Wall(Tile):
     def __init__(self, pos_x, pos_y):
         pygame.sprite.Sprite.__init__(self, walls_group)
         self.image = load_image('wood.png')
         self.rect = self.image.get_rect().move(TILE_WIDTH * pos_x,
                                                TILE_HEIGHT * pos_y)
+
 
 class AnimatedSprite(pygame.sprite.Sprite):
     def __init__(self, frames, x, y):
@@ -248,15 +245,12 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.rect.move(x, y)
 
 
-
 class Monster(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(monsters_group, all_sprites)
         self.image = load_image('monster.png')
         self.rect = self.image.get_rect().move(
             TILE_WIDTH * x, TILE_HEIGHT * y)
-
-
 
 
 class Player(AnimatedSprite):
@@ -290,16 +284,14 @@ class Player(AnimatedSprite):
         self.image = self.frames[self.cur_frame]
 
 
-
 class inv_eqip_upd(pygame.sprite.Sprite):
     def __init__(self, frames_name_save, baff):
         super().__init__(inv_group)
         self.baff = baff
-        #self.freme = pygame.sprite.Sprite()
+
         self.image = load_image(frames_name_save)
         self.rect = self.image.get_rect()
 
-        #pygame.sprite.Sprite.__init__(self, inv_group)
         self.rect.x = 4000
         self.rect.y = -4000
 
@@ -320,11 +312,12 @@ def use_inv(m_pos):
 
     return tec_item
 
+
 class Naga:
     def __init__(self):
         super().__init__(fight_group)
         self.hp_start = 100
-        self.skill = [0, 0, -25, 0, 0, 0, 10, 0,0, 0]
+        self.skill = [0, 0, -25, 0, 0, 0, 10, 0, 0, 0]
         self.at = 10
 
         self.image = load_image('monster.png')
@@ -347,8 +340,6 @@ class Naga:
 class Fight:
     def __init__(self):
         super().__init__(fight_group)
-
-
         self.image = load_image('fight v1.png')
         self.rect = self.image.get_rect()
         self.rect.x = 4000
@@ -360,7 +351,7 @@ class Fight:
         self.skill_monster = None
         self.atc_monster = None
 
-    def fight_new(self, hp_hero, mp_hero, hp_monster,  atc_monster, skill_monster,):
+    def fight_new(self, hp_hero, mp_hero, hp_monster,  atc_monster, skill_monster):
         self.hp_hero = hp_hero
         self.mp_hero = mp_hero
 
@@ -370,6 +361,18 @@ class Fight:
 
         self.rect.x = 0
         self.rect.y = 0
+
+    def fight_step_monster(self):
+        step = random.choice(self.skill_monster)
+        if step == 0:
+            self.hp_hero -= self.atc_monster
+
+        if step > 0:
+            self.hp_monster += step
+
+        if step < 0:
+            self.hp_hero -= step
+
 
 
 level = load_level('test_world1.txt')
@@ -392,15 +395,10 @@ Player_Hero.apend_inv_hero(XP_boots_10_1)
 Naga_m = Naga
 
 
-
-
-
-
 fight_ckek = 0
 fight_monster_name = None
-
+fight_step = 'monster'
 Fight_Go = Fight
-
 
 
 pressed_left = False
@@ -412,12 +410,17 @@ while running:
     if fight_ckek == 1:
         if fight_monster_name == 'Naga':
             player_tic_hp, player_tic_mp = Player_Hero.info_stat()
-            Fight_Go.fight_new(player_tic_hp, player_tic_mp, )
+            monster_tic_hp, monster_tic_atc, monster_tic_skill = Naga_m.fight_stat()
+            Fight_Go.fight_new(player_tic_hp, player_tic_mp, monster_tic_hp, monster_tic_atc, monster_tic_skill)
             fight_monster_name = 'fight_go'
+
+        elif fight_monster_name == 'fight_go':
+            if fight_step == 'monster':
+                Fight_Go.fight_step_monster()
+
 
 
     elif proverka_inv % 2 == 0:
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -430,7 +433,6 @@ while running:
                     inv_print = Player_Hero.open_inv()
                     for n in inv_print:
                         n.upd_out()
-
 
                 else:
                     m = use_inv(event.pos)
@@ -455,6 +457,7 @@ while running:
                         inv_sprite.rect.x = 4000
                         inv_sprite.rect.y = -4000
                         inv_print = Player_Hero.open_inv()
+
                         for n in inv_print:
                             n.upd_out()
 
@@ -533,10 +536,6 @@ while running:
                  load_image('animations\\{}_down_2.png'.format(player_class))])
             player.rect.y += STEP
 
-
-
-
-
         if player.rect.x > 980 and player.rect.y >= 305 and player.rect.y <= 375 and location == 0:
             location = 1
             level = load_level('levelex.txt')
@@ -552,7 +551,6 @@ while running:
         if player.rect.x < 0:
             player.rect.x += 10
 
-
         if player.rect.x >= 975 and player.rect.y >= 305 and player.rect.y <= 375 and location == 1:
             location = 2
             level = load_level('city.txt')
@@ -563,6 +561,7 @@ while running:
             monsters_group.empty()
             player_group.empty()
             player = generate_level(level)
+
         if player.rect.x < 7 and player.rect.y >= 305 and player.rect.y <= 375 and location == 1:
             location = 0
             level = load_level('test_world2.txt')
@@ -573,6 +572,7 @@ while running:
             monsters_group.empty()
             player_group.empty()
             player = generate_level(level)
+
         if player.rect.x < 7 and player.rect.y >= 305 and player.rect.y <= 375 and location == 0:
             location = -1
             level = load_level('monsters_place.txt')
@@ -583,6 +583,7 @@ while running:
             monsters_group.empty()
             player_group.empty()
             player = generate_level(level)
+
         if player.rect.x >= 975 and player.rect.y >= 305 and player.rect.y <= 375 and location == -1:
             location = 0
             level = load_level('test_world1.txt')
@@ -593,6 +594,7 @@ while running:
             monsters_group.empty()
             player_group.empty()
             player = generate_level(level)
+
     screen.fill(pygame.Color('black'))
     tiles_group.draw(screen)
 
