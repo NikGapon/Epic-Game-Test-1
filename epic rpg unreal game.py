@@ -63,6 +63,7 @@ class Hero:
         self.ekip_hero = []  # заполнит после реализации классов персонажей
         self.class_hero = class_hero
         self.lvl_hero = None
+        self.exp = 0
 
     def open_inv(self):
         return self.inv_hero
@@ -77,9 +78,9 @@ class Hero:
         if len(self.inv_hero) != 0 and item_inv < len(self.inv_hero):
             for u in self.inv_hero:
                 if self.inv_hero[item_inv] == u:
-                    y = u.baff
+                    b = u.baff
                     u.upd_out()
-            baff_tec_tec_item = y
+            baff_tec_tec_item = b
             del self.inv_hero[item_inv]
             if baff_tec_tec_item[0] == 'XP':
                 self.hp += baff_tec_tec_item[1]
@@ -91,7 +92,7 @@ class Hero:
         self.hp += heal
 
     def info_stat(self):
-        return self.hp, self.mp
+        return self.hp, self.mp, self.exp
 
 
 def class_select_screen():
@@ -114,11 +115,11 @@ def class_select_screen():
             if event.type == pygame.QUIT:
                 terminate()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.pos[0] > 200 and event.pos[0] < 401 and event.pos[1] < 491 and event.pos[1] > 300:
+                if (event.pos[0] > 200) and (event.pos[0] < 401) and (event.pos[1] < 491) and (event.pos[1] > 300):
                     return 'warrior'
-                elif event.pos[0] > 456 and event.pos[0] < 613 and event.pos[1] < 491 and event.pos[1] > 300:
+                elif (event.pos[0] > 456) and (event.pos[0] < 613) and (event.pos[1] < 491) and (event.pos[1] > 300):
                     return 'wizard'
-                elif event.pos[0] > 649 and event.pos[0] < 804 and event.pos[1] < 491 and event.pos[1] > 300:
+                elif (event.pos[0] > 649) and (event.pos[0] < 804) and (event.pos[1] < 491) and (event.pos[1] > 300):
                     return 'archer'
         pygame.display.flip()
         clock.tick(FPS)
@@ -353,10 +354,11 @@ class Fight_Go(pygame.sprite.Sprite):
         self.skill_monster = None
         self.atc_monster = None
 
-    def fight_new(self, hp_hero, mp_hero, hp_monster,  atc_monster, skill_monster, name_m):
+    def fight_new(self, hp_hero, mp_hero, hp_monster,  atc_monster, skill_monster, name_m, lvl):
         self.monster_name = name_m
         self.hp_hero = hp_hero
         self.mp_hero = mp_hero
+        self.lvl_hero = lvl
 
         self.hp_monster = hp_monster
         self.skill_monster = skill_monster
@@ -436,14 +438,17 @@ while running:
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         x_mous, y_mouse = event.pos
                         print(x_mous, y_mouse)
+                        if (x_mous >= 20) and (x_mous <= 270) and (y_mouse >= 650) and (y_mouse <= 765):
+                            pass
 
         elif fight_monster_name == 'Naga' and fight_ckek_stolk == 0:
             print('Герой видит преред собой Naga, боя не избежать')
-            player_tic_hp, player_tic_mp = Player_Hero.info_stat()
+            player_tic_hp, player_tic_mp, player_lvl = Player_Hero.info_stat()
+            player_lvl = player_lvl // 100 + 1
             monster_tic_hp, monster_tic_atc, monster_tic_skill = Naga_m.fight_stat()
 
             Fight.fight_new(player_tic_hp, player_tic_mp, monster_tic_hp, monster_tic_atc, monster_tic_skill,
-                            fight_monster_name)
+                            fight_monster_name, player_lvl)
             Naga_m.upd(440, 20)
 
             fight_ckek_stolk = 1
