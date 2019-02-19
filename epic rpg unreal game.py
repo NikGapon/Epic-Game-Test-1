@@ -412,8 +412,6 @@ fight_ckek_stolk = 0
 Naga_m = Naga(10)
 
 
-
-
 pressed_left = False
 pressed_right = False
 pressed_up = False
