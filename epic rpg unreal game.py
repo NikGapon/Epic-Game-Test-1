@@ -31,11 +31,11 @@ inv_group = pygame.sprite.Group()
 decor_group = pygame.sprite.Group()
 fight_group = pygame.sprite.Group()
 
-skills_Ranger = {'Меткий выстрел': (0, 35, 'you', 100, 0, 0), 'Метка': (0, 5, 'you', 3, 0, 2),
+skills_Archer = {'Меткий выстрел': (0, 35, 'you', 100, 0, 0), 'Метка': (0, 5, 'you', 3, 0, 2),
                  'Рефлексы охотника': (0, 30, 'hero', 0, 0, 5), 'Град выстрелов': (0, 50, 'all', 20, 0, 0),
                  'Целебные травы': (0, 20, 'hero', 0, 20, 0)}
 
-skills_Ranger_lvl = [(10, 15, 0, 0), (5, 5, 0, 2), (10, 0, 0, 1), (15, 10, 0, 0), (5, 0, 5, 0)]
+skills_Archer_lvl = [(10, 15, 0, 0), (5, 5, 0, 2), (10, 0, 0, 1), (15, 10, 0, 0), (5, 0, 5, 0)]
 
 skills_Warrior = {'Рубящий удар': (0, 35, 'you', 100, 0, 0), 'удар щитом': (0, 5, 'you', 3, 0, 2),
                   'Поднять Щиты': (0, 30, 'hero', 0, 0, 5), 'Град ударов': (0, 50, 'all', 20, 0, 0),
@@ -50,8 +50,8 @@ skills_Wizard = {'Fireball': (0, 35, 'you', 100, 0, 0), 'Огненая брон
 
 skills_Wizard_lvl = [(15, 21, 0, 0), (5, 1, 0, 1), (10, 0, 0, 2), (20, 20, 0, 0), (10, 0, 1, 0)]
 
-start_weapon_ranger = ('лук', 'нож')
-start_armor_ranger = ('потрёпаная одежда приключенца', 'шляпа робин гуда')
+start_weapon_archer = ('лук', 'нож')
+start_armor_archer = ('потрёпаная одежда приключенца', 'шляпа робин гуда')
 
 start_weapon_warrior = ('меч', 'щит')
 start_armor_warrior = ('потрёпаная одежда приключенца', 'шлем')
@@ -62,8 +62,6 @@ start_armor_wizard = ('потрёпаная одежда приключенца'
 stat_armor = {'потрёпаная одежда приключенца': 1, 'шляпа робин гуда': 3, 'шлем': 5, 'колпак (поворской) магический': 1}
 
 stat_weapon = {'лук': 3, 'нож': 7, 'меч': 10, 'щит': 1, 'палочка Гари Патера': 3, 'книга-<краткий гайд по игре>': 1}
-
-
 
 
 def load_image(name, colorkey=None):
@@ -98,6 +96,18 @@ class Hero:
         self.class_hero = class_hero
         self.lvl_hero = None
         self.exp = 0
+        if class_hero == 'warrior':
+            self.weapon = start_weapon_warrior
+            self.armor = start_armor_warrior
+            self.skills = skills_Warrior
+        elif class_hero == 'wizard':
+            self.weapon = start_weapon_wizard
+            self.armor = start_armor_wizard
+            self.skills = skills_Wizard
+        elif class_hero == 'archer':
+            self.weapon = start_weapon_archer
+            self.armor = start_armor_archer
+            self.skills = skills_Archer
 
     def open_inv(self):
         return self.inv_hero
@@ -126,6 +136,12 @@ class Hero:
         self.hp += heal
 
     def info_stat(self):
+        dam1 = stat_weapon[self.weapon[0]]
+        dam2 = stat_weapon[self.weapon[1]]
+        arm1 = stat_armor[self.armor[0]]
+        arm2 = stat_armor[self.armor[0]]
+        dam = dam1 + dam2
+        arm = arm1 + arm2  # доделать оброщение 
         return self.hp, self.mp, self.exp
 
 
