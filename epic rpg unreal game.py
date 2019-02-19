@@ -313,12 +313,12 @@ def use_inv(m_pos):
     return tec_item
 
 
-class Naga:
-    def __init__(self):
+class Naga(pygame.sprite.Sprite):
+    def __init__(self, atc):
         super().__init__(fight_group)
         self.hp_start = 100
         self.skill = [0, 0, -25, 0, 0, 0, 10, 0, 0, 0]
-        self.at = 10
+        self.at = atc
 
         self.image = load_image('monster.png')
         self.rect = self.image.get_rect()
@@ -334,11 +334,12 @@ class Naga:
         self.rect.y = -4000
 
     def fight_stat(self):
+
         return self.hp_start, self.at, self.skill
 
 
-class Fight:
-    def __init__(self):
+class Fight_Go(pygame.sprite.Sprite):
+    def __init__(self, class_hero):
         super().__init__(fight_group)
         self.image = load_image('fight v1.png')
         self.rect = self.image.get_rect()
@@ -346,12 +347,14 @@ class Fight:
         self.rect.y = -4000
         self.hp_hero = None
         self.mp_hero = None
+        self.class_hero = class_hero
 
         self.hp_monster = None
         self.skill_monster = None
         self.atc_monster = None
 
-    def fight_new(self, hp_hero, mp_hero, hp_monster,  atc_monster, skill_monster):
+    def fight_new(self, hp_hero, mp_hero, hp_monster,  atc_monster, skill_monster, name_m):
+        self.monster_name = name_m
         self.hp_hero = hp_hero
         self.mp_hero = mp_hero
 
@@ -364,15 +367,23 @@ class Fight:
 
     def fight_step_monster(self):
         step = random.choice(self.skill_monster)
+
         if step == 0:
             self.hp_hero -= self.atc_monster
+            print(self.monster_name, 'Наносит герою', self.atc_monster, 'урона')
+            print('Здоровье героя', self.hp_hero)
 
         if step > 0:
+            print(self.monster_name, 'использут умение: <Малое лечение>. +' + str(step), 'здоровья')
             self.hp_monster += step
+            print('Здоровье', self.monster_name + ':' + str(self.hp_monster))
 
         if step < 0:
             self.hp_hero -= step
+            print(self.monster_name, 'использет умение <укус>. Герой теряет' + str(step), 'здоровья')
 
+    def win(self):
+        pass  # это проверка на выигрыш
 
 
 level = load_level('test_world1.txt')
@@ -387,18 +398,20 @@ Player_Hero = Hero(player_class)
 XP_boots_25_1 = inv_eqip_upd('Xp_boost_+25_v2.png', ['XP', 25])
 XP_boots_10_1 = inv_eqip_upd('Xp_boost_+10_v2.png', ['XP', 25])
 
-#--------------START--------------
+# --------------START--------------
 Player_Hero.apend_inv_hero(XP_boots_25_1)
 Player_Hero.apend_inv_hero(XP_boots_10_1)
-#------------
-
-Naga_m = Naga
-
+# ------------
 
 fight_ckek = 0
 fight_monster_name = None
 fight_step = 'monster'
-Fight_Go = Fight
+Fight = Fight_Go(player_class)
+fight_ckek_stolk = 0
+
+Naga_m = Naga(10)
+
+
 
 
 pressed_left = False
@@ -408,17 +421,34 @@ pressed_down = False
 running = True
 while running:
     if fight_ckek == 1:
-        if fight_monster_name == 'Naga':
+        if fight_ckek_stolk == 1:
+            if fight_monster_name == 'Naga':
+
+                Naga_m.upd(440, 20)
+            if fight_step == 'monster':
+                Fight.fight_step_monster()
+                Fight.win()
+                fight_step = 'Hero'
+
+            elif fight_step == 'Hero':
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        x_mous, y_mouse = event.pos
+                        print(x_mous, y_mouse)
+
+        elif fight_monster_name == 'Naga' and fight_ckek_stolk == 0:
+            print('Герой видит преред собой Naga, боя не избежать')
             player_tic_hp, player_tic_mp = Player_Hero.info_stat()
             monster_tic_hp, monster_tic_atc, monster_tic_skill = Naga_m.fight_stat()
-            Fight_Go.fight_new(player_tic_hp, player_tic_mp, monster_tic_hp, monster_tic_atc, monster_tic_skill)
-            fight_monster_name = 'fight_go'
 
-        elif fight_monster_name == 'fight_go':
-            if fight_step == 'monster':
-                Fight_Go.fight_step_monster()
+            Fight.fight_new(player_tic_hp, player_tic_mp, monster_tic_hp, monster_tic_atc, monster_tic_skill,
+                            fight_monster_name)
+            Naga_m.upd(440, 20)
 
-
+            fight_ckek_stolk = 1
 
     elif proverka_inv % 2 == 0:
         for event in pygame.event.get():
@@ -468,7 +498,7 @@ while running:
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:  # check for key presses
-                if event.key == pygame.K_LEFT or event.key == pygame.K_a:# left arrow turns left
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a: # left arrow turns left
                     pressed_left = True
                 elif event.key == pygame.K_RIGHT or event.key == pygame.K_d: # right arrow turns right
                     pressed_right = True
@@ -478,16 +508,16 @@ while running:
                     pressed_down = True
             elif event.type == pygame.KEYUP:  # check for key releases
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                    player.update([load_image('animations\\{}_left_2.png'.format(player_class))])# left arrow turns left
+                    player.update([load_image('animations\\{}_left_2.png'.format(player_class))])  # left arrow turns left
                     pressed_left = False
                 elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                    player.update([load_image('animations\\{}_right_2.png'.format(player_class))])# right arrow turns right
+                    player.update([load_image('animations\\{}_right_2.png'.format(player_class))])  # right arrow turns right
                     pressed_right = False
                 elif event.key == pygame.K_UP or event.key == pygame.K_w:
-                    player.update([load_image('animations\\{}_up_2.png'.format(player_class))])# up arrow goes up
+                    player.update([load_image('animations\\{}_up_2.png'.format(player_class))])  # up arrow goes up
                     pressed_up = False
                 elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                    player.update([load_image('animations\\{}_down_2.png'.format(player_class))])# down arrow goes down
+                    player.update([load_image('animations\\{}_down_2.png'.format(player_class))])  # down arrow goes down
                     pressed_down = False
                 elif event.key == pygame.K_i:
 
@@ -619,6 +649,7 @@ while running:
     walls_group.draw(screen)
     player_group.draw(screen)
     inv_group.draw(screen)
+    fight_group.draw(screen)
     pygame.display.flip()
     clock.tick(FPS)
 
