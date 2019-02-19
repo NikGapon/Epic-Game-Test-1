@@ -349,6 +349,7 @@ class Fight_Go(pygame.sprite.Sprite):
         self.hp_hero = None
         self.mp_hero = None
         self.class_hero = class_hero
+        self.lvl_hero = None
 
         self.hp_monster = None
         self.skill_monster = None
