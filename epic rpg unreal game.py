@@ -601,7 +601,9 @@ while running:
     shop_group.draw(screen)
 
     for monster in monsters_group:
-        player.collide(monster)
+        if pygame.sprite.collide_rect(player, monster):
+            fight_ckek = 1
+            fight_monster_name = 'Naga'
 
     for shop in shop_group:
         player.collide(shop)
