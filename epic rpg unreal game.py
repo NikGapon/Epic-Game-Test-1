@@ -530,13 +530,17 @@ while running:
         if fight_monster_name == 'Naga':
 
             Naga_m.upd_out()
-        fight_ckek = 0
-        fight_monster_name = None
-        Fight.otcat()
+
         player_tic_hp, player_tic_mp = Fight.hero_info()
         player_fight_gold = random.randint(1, 25)
         player_fight_exp = random.randint(25, 75)
         Player_Hero.fight_log(player_tic_hp, player_tic_mp, player_fight_exp, player_fight_gold)
+        fight_ckek = 0
+        fight_monster_name = None
+        Fight.otcat()
+        fight_step = 'monster'
+        fight_ckek_stolk = 0
+        dead_ckek = 0
         win_ckek = 0
 
     elif dead_ckek == 1:
