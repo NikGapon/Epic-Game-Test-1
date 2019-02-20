@@ -527,10 +527,11 @@ dead_logo.rect.y = -4000
 running = True
 while running:
     if win_ckek == 1:
-        # Игрорь код сюда
+        if fight_monster_name == 'Naga':
 
-        # дальше писать не надо
+            Naga_m.upd_out()
         fight_ckek = 0
+        fight_monster_name = None
         Fight.otcat()
         player_tic_hp, player_tic_mp = Fight.hero_info()
         player_fight_gold = random.randint(1, 25)
@@ -770,6 +771,9 @@ while running:
         if pygame.sprite.collide_rect(player, monster):
             fight_ckek = 1
             fight_monster_name = 'Naga'
+            if win_ckek == 1:
+                monster.rect.x = 4000
+                monster.rect.y = -4000
 
     for shop in shop_group:
         player.collide(shop)
