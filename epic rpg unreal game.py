@@ -96,10 +96,12 @@ class Hero:
         self.class_hero = class_hero
         self.lvl_hero = None
         self.exp = 0
+        self.gold = 25
         if class_hero == 'warrior':
             self.weapon = start_weapon_warrior
             self.armor = start_armor_warrior
             self.skills = skills_Warrior
+            self.mp = 50
         elif class_hero == 'wizard':
             self.weapon = start_weapon_wizard
             self.armor = start_armor_wizard
@@ -108,6 +110,7 @@ class Hero:
             self.weapon = start_weapon_archer
             self.armor = start_armor_archer
             self.skills = skills_Archer
+            self.mp = 75
 
     def open_inv(self):
         return self.inv_hero
@@ -134,6 +137,12 @@ class Hero:
 
     def heal(self, heal):
         self.hp += heal
+
+    def fight_log(self, hp, mp, exp, gold):
+        self.hp = hp
+        self.mp = mp
+        self.exp += exp
+        self.gold += gold
 
     def info_stat(self):
         dam1 = stat_weapon[self.weapon[0]]
@@ -419,6 +428,20 @@ class Fight_Go(pygame.sprite.Sprite):
 
         self.rect.x = 0
         self.rect.y = 0
+    def hero_info(self):
+        return self.hp_hero, self.mp_hero
+
+    def otcat(self):
+        self.rect.x = 4000
+        self.rect.y = -4000
+        self.hp_hero = None
+        self.mp_hero = None
+
+        self.lvl_hero = None
+
+        self.hp_monster = None
+        self.skill_monster = None
+        self.atc_monster = None
 
     def fight_step_monster(self):
         step = random.choice(self.skill_monster)
@@ -484,6 +507,7 @@ fight_step = 'monster'
 Fight = Fight_Go(player_class)
 fight_ckek_stolk = 0
 dead_ckek = 0
+win_ckek = 0
 
 Naga_m = Naga(10)
 
@@ -502,7 +526,19 @@ dead_logo.rect.y = -4000
 
 running = True
 while running:
-    if dead_ckek == 1:
+    if win_ckek == 1:
+        # Игрорь код сюда
+
+        # дальше писать не надо
+        fight_ckek = 0
+        Fight.otcat()
+        player_tic_hp, player_tic_mp = Fight.hero_info()
+        player_fight_gold = random.randint(1, 25)
+        player_fight_exp = random.randint(25, 75)
+        Player_Hero.fight_log(player_tic_hp, player_tic_mp, player_fight_exp, player_fight_gold)
+        win_ckek = 0
+
+    elif dead_ckek == 1:
         dead_logo.rect.x = 0
         dead_logo.rect.y = 0
         for event in pygame.event.get():
@@ -515,9 +551,8 @@ while running:
             if fight_step == 'monster':
                 Fight.fight_step_monster()
                 if Fight.win_ckek() == 'Win_Hero':
-                    pass  # код победы
+                    win_ckek = 1  # код победы
                 elif Fight.win_ckek() == 'Win_Monster':
-
                     dead_ckek = 1  # код смерти
                 elif Fight.win_ckek() == 'Next':
                     fight_step = 'Hero'
@@ -532,9 +567,8 @@ while running:
                         if (x_mous >= 20) and (x_mous <= 270) and (y_mouse >= 650) and (y_mouse <= 765):
                             Fight.atc_hero()
                             if Fight.win_ckek() == 'Win_Hero':
-                                pass  # код победы
+                                win_ckek = 1  # код победы
                             elif Fight.win_ckek() == 'Win_Monster':
-
                                 dead_ckek = 1  # код смерти
                             elif Fight.win_ckek() == 'Next':
                                 fight_step = 'monster'
