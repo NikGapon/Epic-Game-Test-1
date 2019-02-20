@@ -141,8 +141,8 @@ class Hero:
         arm1 = stat_armor[self.armor[0]]
         arm2 = stat_armor[self.armor[0]]
         dam = dam1 + dam2
-        arm = arm1 + arm2  # доделать оброщение 
-        return self.hp, self.mp, self.exp
+        arm = arm1 + arm2
+        return self.hp, self.mp, self.exp, dam, arm
 
 
 def class_select_screen():
@@ -405,11 +405,13 @@ class Fight_Go(pygame.sprite.Sprite):
         self.skill_monster = None
         self.atc_monster = None
 
-    def fight_new(self, hp_hero, mp_hero, hp_monster,  atc_monster, skill_monster, name_m, lvl):
+    def fight_new(self, hp_hero, mp_hero, hp_monster,  atc_monster, skill_monster, name_m, lvl, dam, arm):
         self.monster_name = name_m
         self.hp_hero = hp_hero
         self.mp_hero = mp_hero
         self.lvl_hero = lvl
+        self.dam_hero = dam
+        self.arm_hero = arm
 
         self.hp_monster = hp_monster
         self.skill_monster = skill_monster
@@ -427,16 +429,32 @@ class Fight_Go(pygame.sprite.Sprite):
             print('Здоровье героя', self.hp_hero)
 
         if step > 0:
-            print(self.monster_name, 'использут умение: <Малое лечение>. +' + str(step), 'здоровья')
             self.hp_monster += step
+            print(self.monster_name, 'использут умение: <Малое лечение>. +' + str(step), 'здоровья')
             print('Здоровье', self.monster_name + ':' + str(self.hp_monster))
 
         if step < 0:
-            self.hp_hero -= step
+            self.hp_hero += step
             print(self.monster_name, 'использет умение <укус>. Герой теряет' + str(step), 'здоровья')
+            print('Здоровье героя', self.hp_hero)
 
-    def win(self):
-        pass  # это проверка на выигрыш
+    def win_ckek(self):
+        if self.hp_hero <= 0:  # это проверка на выигрыш
+            return 'Win_Hero'
+        elif self.hp_monster <= 0:
+            return 'Win_Monster'
+        elif self.hp_hero > 0 and self.hp_monster > 0:
+            return 'Next'
+
+    def atc_hero(self):
+
+        tic_dem = int(self.dam_hero) * int(self.lvl_hero)
+
+        self.hp_monster = int(self.hp_monster)
+        self.hp_monster -= int(tic_dem)
+        print('Герой наносит удар на', tic_dem, 'урона')
+        print('Здоровье', self.monster_name + ':', self.hp_monster)
+
 
 
 level = load_level('test_world1.txt')
@@ -474,12 +492,15 @@ while running:
     if fight_ckek == 1:
         if fight_ckek_stolk == 1:
             if fight_monster_name == 'Naga':
-
                 Naga_m.upd(440, 20)
             if fight_step == 'monster':
                 Fight.fight_step_monster()
-                Fight.win()
-                fight_step = 'Hero'
+                if Fight.win_ckek() == 'Win_Hero':
+                    pass  # код победы
+                elif Fight.win_ckek() == 'Win_Monster':
+                    pass  # код смерти
+                elif Fight.win_ckek() == 'Next':
+                    fight_step = 'Hero'
 
             elif fight_step == 'Hero':
                 for event in pygame.event.get():
@@ -488,18 +509,25 @@ while running:
 
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         x_mous, y_mouse = event.pos
-                        print(x_mous, y_mouse)
+                        #print(x_mous, y_mouse)
                         if (x_mous >= 20) and (x_mous <= 270) and (y_mouse >= 650) and (y_mouse <= 765):
-                            pass
+                            Fight.atc_hero()
+                            if Fight.win_ckek() == 'Win_Hero':
+                                pass  # код победы
+                            elif Fight.win_ckek() == 'WinMonster':
+                                pass  # код смерти
+                            elif Fight.win_ckek() == 'Next':
+                                fight_step = 'monster'
 
         elif fight_monster_name == 'Naga' and fight_ckek_stolk == 0:
             print('Герой видит преред собой Naga, боя не избежать')
-            player_tic_hp, player_tic_mp, player_lvl = Player_Hero.info_stat()
+            player_tic_hp, player_tic_mp, player_lvl, player_dam, player_arm = Player_Hero.info_stat()
             player_lvl = player_lvl // 100 + 1
+
             monster_tic_hp, monster_tic_atc, monster_tic_skill = Naga_m.fight_stat()
 
             Fight.fight_new(player_tic_hp, player_tic_mp, monster_tic_hp, monster_tic_atc, monster_tic_skill,
-                            fight_monster_name, player_lvl)
+                            fight_monster_name, int(player_lvl), int(player_dam), int(player_arm))
             Naga_m.upd(440, 20)
 
             fight_ckek_stolk = 1
