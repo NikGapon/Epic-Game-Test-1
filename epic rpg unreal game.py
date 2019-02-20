@@ -392,7 +392,7 @@ class Naga(pygame.sprite.Sprite):
 class Fight_Go(pygame.sprite.Sprite):
     def __init__(self, class_hero):
         super().__init__(fight_group)
-        self.image = load_image('fight v1.png')
+        self.image = load_image('fight v2.png')
         self.rect = self.image.get_rect()
         self.rect.x = 4000
         self.rect.y = -4000
@@ -440,9 +440,10 @@ class Fight_Go(pygame.sprite.Sprite):
 
     def win_ckek(self):
         if self.hp_hero <= 0:  # это проверка на выигрыш
-            return 'Win_Hero'
-        elif self.hp_monster <= 0:
             return 'Win_Monster'
+
+        elif self.hp_monster <= 0:
+            return 'Win_Hero'
         elif self.hp_hero > 0 and self.hp_monster > 0:
             return 'Next'
 
@@ -454,6 +455,7 @@ class Fight_Go(pygame.sprite.Sprite):
         self.hp_monster -= int(tic_dem)
         print('Герой наносит удар на', tic_dem, 'урона')
         print('Здоровье', self.monster_name + ':', self.hp_monster)
+
 
 
 
@@ -474,11 +476,14 @@ Player_Hero.apend_inv_hero(XP_boots_25_1)
 Player_Hero.apend_inv_hero(XP_boots_10_1)
 # ------------
 
+
+
 fight_ckek = 0
 fight_monster_name = None
 fight_step = 'monster'
 Fight = Fight_Go(player_class)
 fight_ckek_stolk = 0
+dead_ckek = 0
 
 Naga_m = Naga(10)
 
@@ -487,9 +492,23 @@ pressed_left = False
 pressed_right = False
 pressed_up = False
 pressed_down = False
+
+dead_logo = pygame.sprite.Sprite()
+dead_logo.image = load_image("dead logo v1.png")
+dead_logo.rect = dead_logo.image.get_rect()
+dead_logo.add(fight_group)
+dead_logo.rect.x = 4000
+dead_logo.rect.y = -4000
+
 running = True
 while running:
-    if fight_ckek == 1:
+    if dead_ckek == 1:
+        dead_logo.rect.x = 0
+        dead_logo.rect.y = 0
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+    elif fight_ckek == 1:
         if fight_ckek_stolk == 1:
             if fight_monster_name == 'Naga':
                 Naga_m.upd(440, 20)
@@ -498,7 +517,8 @@ while running:
                 if Fight.win_ckek() == 'Win_Hero':
                     pass  # код победы
                 elif Fight.win_ckek() == 'Win_Monster':
-                    pass  # код смерти
+
+                    dead_ckek = 1  # код смерти
                 elif Fight.win_ckek() == 'Next':
                     fight_step = 'Hero'
 
@@ -506,7 +526,6 @@ while running:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         running = False
-
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         x_mous, y_mouse = event.pos
                         #print(x_mous, y_mouse)
@@ -514,8 +533,9 @@ while running:
                             Fight.atc_hero()
                             if Fight.win_ckek() == 'Win_Hero':
                                 pass  # код победы
-                            elif Fight.win_ckek() == 'WinMonster':
-                                pass  # код смерти
+                            elif Fight.win_ckek() == 'Win_Monster':
+
+                                dead_ckek = 1  # код смерти
                             elif Fight.win_ckek() == 'Next':
                                 fight_step = 'monster'
 
