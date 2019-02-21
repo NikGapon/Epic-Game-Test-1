@@ -821,16 +821,20 @@ while running:
                         buy.upd_out_self()
                         pressed_e = False
                     elif event.pos[0] >= 0 and event.pos[1] <= 50:
-                        XP_boots_10_1.upd(0, 4000)
-                        Player_Hero.apend_inv_hero(XP_boots_10_1)
+                        if Player_Hero.gold >= 10:
+                            XP_boots_10_1.upd(0, 4000)
+                            Player_Hero.gold_pop(10)
+                            Player_Hero.apend_inv_hero(XP_boots_10_1)
                     elif event.pos[0] >= 0 and event.pos[1] <= 100:
-                        XP_boots_25_1.upd(0, 4000)
-                        Player_Hero.apend_inv_hero(XP_boots_25_1)
+                        if Player_Hero.gold >= 15:
+                            XP_boots_25_1.upd(0, 4000)
+                            Player_Hero.gold_pop(15)
+                            Player_Hero.apend_inv_hero(XP_boots_25_1)
                     elif event.pos[0] >= 0 and event.pos[1] <= 150:
-                        MP_boots_20_1.upd(0, 4000)
-                        Player_Hero.apend_inv_hero(MP_boots_20_1)
-                        Player_Hero.gold_pop(25)
-
+                        if Player_Hero.gold >= 20:
+                            MP_boots_20_1.upd(0, 4000)
+                            Player_Hero.apend_inv_hero(MP_boots_20_1)
+                            Player_Hero.gold_pop(20)
 
         # In your game loop, check for key states:
         if pressed_left:
