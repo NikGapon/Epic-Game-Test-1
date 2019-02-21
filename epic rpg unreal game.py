@@ -496,7 +496,6 @@ Player_Hero = Hero(player_class)
 XP_boots_25_1 = inv_eqip_upd('Xp_boost_+25_v2.png', ['XP', 25])
 XP_boots_10_1 = inv_eqip_upd('Xp_boost_+10_v2.png', ['XP', 25])
 MP_boots_20_1 = inv_eqip_upd('Mp_boost_+20_v2.png', ['MP', 20])
-
 # --------------START--------------
 Player_Hero.apend_inv_hero(XP_boots_25_1)
 Player_Hero.apend_inv_hero(XP_boots_10_1)
