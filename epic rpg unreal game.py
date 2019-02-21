@@ -235,7 +235,7 @@ def load_level(filename):
 def generate_level(level):
     new_player, x, y = None, None, None
     m_x, m_y = random.randint(0, 4), random.randint(0, 10)
-    if location != 0 and location != 1:
+    if location != 0 and location != 1 and location != 2:
         if level[m_x][m_y] not in '@&#l':
             level[m_x][m_y] = '!'
     for y in range(len(level)):
@@ -257,7 +257,13 @@ def generate_level(level):
             elif level[y][x] == 'l':
                 Decor('shop', x, y)
             elif level[y][x] == 'o':
-                Decor('vegetables', x, y)
+                Decor('vegetables1', x, y)
+            elif level[y][x] == 's':
+                Decor('decor_shop1', x, y)
+            elif level[y][x] == 'd':
+                Decor('decor_shop2', x, y)
+            elif level[y][x] == 'p':
+                Decor('vegetables2', x, y)
 
     return new_player
 
@@ -269,9 +275,11 @@ tile_images = {
     'road': load_image('road.png'),
     'empty': load_image('grass1.png'),
     'player': load_image('animations\\{}_down_2.png'.format(player_class)),
-    'vegetables': load_image('vegetables.png'),
-    'shop': load_image('lavka.png')
-
+    'vegetables1': load_image('vegetables1.png'),
+    'vegetables2': load_image('vegetables2.png'),
+    'shop': load_image('lavka.png'),
+    'decor_shop1': load_image('decor_shop1.png'),
+    'decor_shop2': load_image('decor_shop2.png')
 }
 
 
@@ -542,7 +550,7 @@ class skiils(pygame.sprite.Sprite):
 
 
 
-level = load_level('test_world1.txt')
+level = load_level('main_location1.txt')
 player = generate_level(level)
 
 
@@ -849,30 +857,28 @@ while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == pygame.KEYDOWN:  # check for key presses
-                if event.key == pygame.K_LEFT or event.key == pygame.K_a: # left arrow turns left
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     pressed_left = True
-                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d: # right arrow turns right
+                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     pressed_right = True
-                elif event.key == pygame.K_UP or event.key == pygame.K_w:  # up arrow goes up
+                elif event.key == pygame.K_UP or event.key == pygame.K_w:
                     pressed_up = True
-                elif event.key == pygame.K_DOWN or event.key == pygame.K_s:  # down arrow goes down
+                elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     pressed_down = True
 
-
-
-            elif event.type == pygame.KEYUP:  # check for key releases
+            elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                    player.update([load_image('animations\\{}_left_2.png'.format(player_class))])  # left arrow turns left
+                    player.update([load_image('animations\\{}_left_2.png'.format(player_class))])
                     pressed_left = False
                 elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                    player.update([load_image('animations\\{}_right_2.png'.format(player_class))])  # right arrow turns right
+                    player.update([load_image('animations\\{}_right_2.png'.format(player_class))])
                     pressed_right = False
                 elif event.key == pygame.K_UP or event.key == pygame.K_w:
-                    player.update([load_image('animations\\{}_up_2.png'.format(player_class))])  # up arrow goes up
+                    player.update([load_image('animations\\{}_up_2.png'.format(player_class))])
                     pressed_up = False
                 elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                    player.update([load_image('animations\\{}_down_2.png'.format(player_class))])  # down arrow goes down
+                    player.update([load_image('animations\\{}_down_2.png'.format(player_class))])
                     pressed_down = False
                 elif event.key == pygame.K_i:
 
@@ -929,7 +935,7 @@ while running:
                             Player_Hero.apend_inv_hero(MP_boots_20_1)
                             Player_Hero.gold_pop(20)
 
-        # In your game loop, check for key states:
+
         if pressed_left:
             player.update(
                 [load_image('animations\\{}_left_1.png'.format(player_class)),
@@ -961,7 +967,7 @@ while running:
 
         if (player.rect.x > 980 and player.rect.y >= 305) and player.rect.y <= 375 and location == 0:
             location = 1
-            level = load_level('levelex.txt')
+            level = load_level('levelroad1.txt')
             decor_group.empty()
             tiles_group.empty()
             walls_group.empty()
@@ -987,7 +993,7 @@ while running:
 
         if (player.rect.x < 7 and player.rect.y >= 305) and player.rect.y <= 375 and location == 1:
             location = 0
-            level = load_level('test_world2.txt')
+            level = load_level('main_location2.txt')
             decor_group.empty()
             tiles_group.empty()
             shop_group.empty()
@@ -1009,7 +1015,7 @@ while running:
 
         if (player.rect.x >= 975 and player.rect.y >= 305) and player.rect.y <= 375 and location == -1:
             location = 0
-            level = load_level('test_world1.txt')
+            level = load_level('main_location1.txt')
             decor_group.empty()
             tiles_group.empty()
             shop_group.empty()
@@ -1017,6 +1023,25 @@ while running:
             monsters_group.empty()
             player_group.empty()
             player = generate_level(level)
+        if (player.rect.x < 7 and player.rect.y >= 305) and player.rect.y <= 375 and location == 2:
+            location = 1
+            level = load_level('levelroad2.txt')
+            decor_group.empty()
+            tiles_group.empty()
+            shop_group.empty()
+            walls_group.empty()
+            monsters_group.empty()
+            player_group.empty()
+            player = generate_level(level)
+
+        if player.rect.x > 980:
+            player.rect.x -= 10
+        if player.rect.x < 0:
+            player.rect.x += 10
+        if player.rect.y > 700:
+            player.rect.y -= 10
+        if player.rect.y < 0:
+            player.rect.y += 10
 
     screen.fill(pygame.Color('black'))
     tiles_group.draw(screen)
@@ -1038,7 +1063,7 @@ while running:
     for shop in shop_group:
         if pygame.sprite.collide_rect(player, shop):
             player.collide(shop)
-        if ((player.rect.x >= shop.rect.x) and (player.rect.x <= (shop.rect.x + 200))) and ((player.rect.y >= shop.rect.y) and (player.rect.x <= (shop.rect.y + 50))):
+        if ((player.rect.x >= shop.rect.x) and (player.rect.x <= (shop.rect.x + 100))) and ((player.rect.y >= shop.rect.y) and (player.rect.y <= (shop.rect.y + 160))):
             shop_collide = True
         else:
             shop_collide = False
