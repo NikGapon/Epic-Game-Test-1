@@ -449,7 +449,10 @@ class Fight_Go(pygame.sprite.Sprite):
         step = random.choice(self.skill_monster)
 
         if step == 0:
-            self.hp_hero -= self.atc_monster
+            if self.atc_monster <= self.arm_hero:
+                self.hp_hero = self.hp_hero
+            else:
+                self.hp_hero -= (self.atc_monster - self.arm_hero)
             print(self.monster_name, 'Наносит герою', self.atc_monster, 'урона')
             print('Здоровье героя', self.hp_hero)
 
@@ -459,7 +462,10 @@ class Fight_Go(pygame.sprite.Sprite):
             print('Здоровье', self.monster_name + ':' + str(self.hp_monster))
 
         if step < 0:
-            self.hp_hero += step
+            if step <= self.arm_hero:
+                self.hp_hero = self.hp_hero
+            else:
+                self.hp_hero -= (step - self.arm_hero)
             print(self.monster_name, 'использет умение <укус>. Герой теряет' + str(step), 'здоровья')
             print('Здоровье героя', self.hp_hero)
 
@@ -482,7 +488,46 @@ class Fight_Go(pygame.sprite.Sprite):
         print('Здоровье', self.monster_name + ':', self.hp_monster)
 
 
+class skiils(pygame.sprite.Sprite):
+    def __init__(self, pict, mp, dam, hp, arm):
+        super().__init__(fight_group)
+        self.mp = mp
+        self.dam = dam
+        self.hp = hp
+        self.arm = arm
+        self.image = load_image(pict)
+        self.rect = self.image.get_rect()
+        self.rect.x = 4000
+        self.rect.y = -4000
 
+    def upd(self, x, y):
+        self.rect.x = x
+        self.rect.y = y
+
+    def upd_out(self):
+        self.rect.x = 4000
+        self.rect.y = -4000
+
+
+if player_class == 'archer':
+    skill1 = skiils('Accurate shot v1.png', 35, 100, 0, 0)
+    skill2 = skiils('Metca v1.png', 5, 3, 0, 2)
+    skill3 = skiils('reflex hunter v1.png', 30, 0, 0, 5)
+    skill4 = skiils('zelebnii trava v1.png', 20, 0, 20, 0)
+
+
+if player_class == 'warrior':
+    skill1 = skiils('ryb hit v1.png', 35, 100, 0, 0)
+    skill2 = skiils('', 5, 3, 0, 2)
+    skill3 = skiils('', 30, 0, 0, 5)
+    skill4 = skiils('', 20, 0, 20, 0)
+
+
+if player_class == 'wizard':
+    skill1 = skiils('', 35, 100, 0, 0)
+    skill2 = skiils('', 5, 3, 0, 2)
+    skill3 = skiils('', 30, 0, 0, 5)
+    skill4 = skiils('', 20, 0, 20, 0)
 
 level = load_level('test_world1.txt')
 player = generate_level(level)
