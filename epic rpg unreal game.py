@@ -797,17 +797,36 @@ while running:
                 elif event.key == pygame.K_e:
                     if not pressed_e and shop_collide:
                         pressed_e = True
+                        XP_boots_10_1.upd(0, 0)
+                        XP_boots_25_1.upd(0, 50)
+                        MP_boots_20_1.upd(0, 100)
                         buy.upd_self()
                     elif pressed_e:
+                        XP_boots_10_1.upd(0, 4000)
+                        XP_boots_25_1.upd(0, 4000)
+                        MP_boots_20_1.upd(0, 4000)
                         buy.upd_out_self()
+
                         pressed_e = False
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if pressed_e:
                     if event.pos[0] >= 975 and event.pos[1] <= 40:
+                        XP_boots_10_1.upd(0, 4000)
+                        XP_boots_25_1.upd(0, 4000)
+                        MP_boots_20_1.upd(0, 4000)
                         buy.upd_out_self()
                         pressed_e = False
-
+                    elif event.pos[0] >= 0 and event.pos[1] <= 50:
+                        XP_boots_10_1.upd(0, 4000)
+                        Player_Hero.apend_inv_hero(XP_boots_10_1)
+                    elif event.pos[0] >= 0 and event.pos[1] <= 100:
+                        XP_boots_25_1.upd(0, 4000)
+                        Player_Hero.apend_inv_hero(XP_boots_25_1)
+                    elif event.pos[0] >= 0 and event.pos[1] <= 150:
+                        MP_boots_20_1.upd(0, 4000)
+                        Player_Hero.apend_inv_hero(MP_boots_20_1)
+                        Player_Hero.gold_pop(25)
 
 
         # In your game loop, check for key states:
@@ -911,6 +930,10 @@ while running:
             if win_ckek == 1:
                 monster.rect.x = 4000
                 monster.rect.y = -4000
+                pressed_left = False
+                pressed_right = False
+                pressed_up = False
+                pressed_down = False
 
     for shop in shop_group:
         if pygame.sprite.collide_rect(player, shop):
@@ -930,9 +953,9 @@ while running:
     monsters_group.draw(screen)
     walls_group.draw(screen)
     player_group.draw(screen)
+    buy_group.draw(screen)
     inv_group.draw(screen)
     fight_group.draw(screen)
-    buy_group.draw(screen)
     pygame.display.flip()
     clock.tick(FPS)
 terminate()
