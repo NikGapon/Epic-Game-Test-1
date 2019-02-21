@@ -14,6 +14,7 @@ inv_open = 1
 
 proverka_inv = 1
 
+
 location = 0
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -21,6 +22,7 @@ clock = pygame.time.Clock()
 timer = pygame.time.Clock()
 
 
+buy_group = pygame.sprite.Group()
 shop_group = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 monsters_group = pygame.sprite.Group()
@@ -250,9 +252,9 @@ def generate_level(level):
                     Tile('empty', x, y)
                 Monster(x, y)
             elif level[y][x] == 'l':
-                Shop(x, y)
+                Decor('shop', x, y)
             elif level[y][x] == 'o':
-                Decor(x, y)
+                Decor('vegetables', x, y)
 
     return new_player
 
@@ -263,22 +265,38 @@ player_class = class_select_screen()
 tile_images = {
     'road': load_image('road.png'),
     'empty': load_image('grass1.png'),
-    'player': load_image('animations\\{}_down_2.png'.format(player_class))
+    'player': load_image('animations\\{}_down_2.png'.format(player_class)),
+    'vegetables': load_image('vegetables.png'),
+    'shop': load_image('lavka.png')
+
 }
 
 
 class Decor(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        super().__init__(decor_group, all_sprites)
-        self.image = load_image('vegetables.png')
+    def __init__(self, tile, x, y):
+        if tile == 'shop':
+            super().__init__(shop_group, all_sprites)
+        else:
+            super().__init__(decor_group, all_sprites)
+        self.image = tile_images[tile]
         self.rect = self.image.get_rect().move(TILE_WIDTH * x, TILE_HEIGHT * y)
 
 
-class Shop(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        super().__init__(shop_group, all_sprites)
-        self.image = load_image('lavka.png')
-        self.rect = self.image.get_rect().move(TILE_WIDTH * x, TILE_HEIGHT * y)
+class Buy(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__(buy_group, all_sprites)
+        self.image = load_image('lavka logo v1.png')
+        self.rect = self.image.get_rect()
+        self.rect.x = 4000
+        self.rect.y = -4000
+
+    def upd_self(self):
+        self.rect.x = 0
+        self.rect.y = 0
+
+    def upd_out_self(self):
+        self.rect.x = 4000
+        self.rect.y = -4000
 
 
 class Tile(pygame.sprite.Sprite):
@@ -374,7 +392,6 @@ def use_inv(m_pos):
 
     return tec_item
 
-
 class Naga(pygame.sprite.Sprite):
     def __init__(self, atc):
         super().__init__(fight_group)
@@ -398,7 +415,6 @@ class Naga(pygame.sprite.Sprite):
     def fight_stat(self):
 
         return self.hp_start, self.at, self.skill
-
 
 class Fight_Go(pygame.sprite.Sprite):
     def __init__(self, class_hero):
@@ -541,13 +557,14 @@ Player_Hero = Hero(player_class)
 XP_boots_25_1 = inv_eqip_upd('Xp_boost_+25_v2.png', ['XP', 25])
 XP_boots_10_1 = inv_eqip_upd('Xp_boost_+10_v2.png', ['XP', 25])
 MP_boots_20_1 = inv_eqip_upd('Mp_boost_+20_v2.png', ['MP', 20])
+
 # --------------START--------------
 Player_Hero.apend_inv_hero(XP_boots_25_1)
 Player_Hero.apend_inv_hero(XP_boots_10_1)
 # ------------
 
 
-
+buy = Buy()
 fight_ckek = 0
 fight_monster_name = None
 fight_step = 'monster'
@@ -563,6 +580,8 @@ pressed_left = False
 pressed_right = False
 pressed_up = False
 pressed_down = False
+pressed_e = False
+shop_collide = False
 
 dead_logo = pygame.sprite.Sprite()
 dead_logo.image = load_image("dead logo v1.png")
@@ -681,6 +700,8 @@ while running:
 
                     proverka_inv += 1
 
+
+
     elif proverka_inv % 2 != 0:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -694,6 +715,9 @@ while running:
                     pressed_up = True
                 elif event.key == pygame.K_DOWN or event.key == pygame.K_s:  # down arrow goes down
                     pressed_down = True
+
+
+
             elif event.type == pygame.KEYUP:  # check for key releases
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     player.update([load_image('animations\\{}_left_2.png'.format(player_class))])  # left arrow turns left
@@ -723,6 +747,21 @@ while running:
                             bag_with_items += 1
 
                     proverka_inv += 1
+                elif event.key == pygame.K_e:
+                    if not pressed_e and shop_collide:
+                        pressed_e = True
+                        buy.upd_self()
+                    elif pressed_e:
+                        buy.upd_out_self()
+                        pressed_e = False
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if pressed_e:
+                    if event.pos[0] >= 975 and event.pos[1] <= 40:
+                        buy.upd_out_self()
+                        pressed_e = False
+
+
 
         # In your game loop, check for key states:
         if pressed_left:
@@ -754,7 +793,7 @@ while running:
                  load_image('animations\\{}_down_2.png'.format(player_class))])
             player.rect.y += STEP
 
-        if player.rect.x > 980 and player.rect.y >= 305 and player.rect.y <= 375 and location == 0:
+        if (player.rect.x > 980 and player.rect.y >= 305) and player.rect.y <= 375 and location == 0:
             location = 1
             level = load_level('levelex.txt')
             decor_group.empty()
@@ -769,7 +808,7 @@ while running:
         if player.rect.x < 0:
             player.rect.x += 10
 
-        if player.rect.x >= 975 and player.rect.y >= 305 and player.rect.y <= 375 and location == 1:
+        if (player.rect.x >= 975 and player.rect.y >= 305) and player.rect.y <= 375 and location == 1:
             location = 2
             level = load_level('city.txt')
             decor_group.empty()
@@ -780,7 +819,7 @@ while running:
             player_group.empty()
             player = generate_level(level)
 
-        if player.rect.x < 7 and player.rect.y >= 305 and player.rect.y <= 375 and location == 1:
+        if (player.rect.x < 7 and player.rect.y >= 305) and player.rect.y <= 375 and location == 1:
             location = 0
             level = load_level('test_world2.txt')
             decor_group.empty()
@@ -791,7 +830,7 @@ while running:
             player_group.empty()
             player = generate_level(level)
 
-        if player.rect.x < 7 and player.rect.y >= 305 and player.rect.y <= 375 and location == 0:
+        if (player.rect.x < 7 and player.rect.y >= 305) and player.rect.y <= 375 and location == 0:
             location = -1
             level = load_level('monsters_place.txt')
             decor_group.empty()
@@ -802,7 +841,7 @@ while running:
             player_group.empty()
             player = generate_level(level)
 
-        if player.rect.x >= 975 and player.rect.y >= 305 and player.rect.y <= 375 and location == -1:
+        if (player.rect.x >= 975 and player.rect.y >= 305) and player.rect.y <= 375 and location == -1:
             location = 0
             level = load_level('test_world1.txt')
             decor_group.empty()
@@ -827,7 +866,12 @@ while running:
                 monster.rect.y = -4000
 
     for shop in shop_group:
-        player.collide(shop)
+        if pygame.sprite.collide_rect(player, shop):
+            player.collide(shop)
+        if ((player.rect.x >= shop.rect.x) and (player.rect.x <= (shop.rect.x + 200))) and ((player.rect.y >= shop.rect.y) and (player.rect.x <= (shop.rect.y + 50))):
+            shop_collide = True
+        else:
+            shop_collide = False
 
     for wall in walls_group:
         player.collide(wall)
@@ -841,7 +885,7 @@ while running:
     player_group.draw(screen)
     inv_group.draw(screen)
     fight_group.draw(screen)
+    buy_group.draw(screen)
     pygame.display.flip()
     clock.tick(FPS)
-
 terminate()
