@@ -157,6 +157,9 @@ class Hero:
         arm = arm1 + arm2
         return self.hp, self.mp, self.exp, dam, arm
 
+    def gold_pop(self, golg):
+        self.gold -= golg
+
 
 def class_select_screen():
     fon = pygame.transform.scale(load_image('menu_background.jpg'), (WIDTH, HEIGHT))
