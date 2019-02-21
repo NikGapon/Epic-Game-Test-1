@@ -568,6 +568,7 @@ fight_group.add(dodj)
 dodj.rect.x = 4000
 dodj.rect.y = -4000
 dodj_ckek = 0
+dodj_ckek_botn = 0
 
 if player_class == 'archer':
     skill1 = skiils('Accurate shot v1.png', 35, 100, 0, 0)
@@ -634,13 +635,29 @@ while running:
             if fight_monster_name == 'Naga':
                 Naga_m.upd(440, 20)
             if fight_step == 'monster':
-                Fight.fight_step_monster()
-                if Fight.win_ckek() == 'Win_Hero':
-                    win_ckek = 1  # код победы
-                elif Fight.win_ckek() == 'Win_Monster':
-                    dead_ckek = 1  # код смерти
-                elif Fight.win_ckek() == 'Next':
-                    fight_step = 'Hero'
+                if dodj_ckek > 0:
+
+                    if random.choice(['Yes', '0', '0']) == 'Yes':
+                        dodj_ckek = 0
+                        print('Герой увернулся от удара')
+                        fight_step = 'Hero'
+                    else:
+                        Fight.fight_step_monster()
+                        if Fight.win_ckek() == 'Win_Hero':
+                            win_ckek = 1  # код победы
+                        elif Fight.win_ckek() == 'Win_Monster':
+                            dead_ckek = 1  # код смерти
+                        elif Fight.win_ckek() == 'Next':
+                            fight_step = 'Hero'
+
+                else:
+                    Fight.fight_step_monster()
+                    if Fight.win_ckek() == 'Win_Hero':
+                        win_ckek = 1  # код победы
+                    elif Fight.win_ckek() == 'Win_Monster':
+                        dead_ckek = 1  # код смерти
+                    elif Fight.win_ckek() == 'Next':
+                        fight_step = 'Hero'
 
             elif fight_step == 'Hero':
                 for event in pygame.event.get():
@@ -665,9 +682,13 @@ while running:
 
                             dodj.rect.x = 20
                             dodj.rect.y = 450
-                            if (x_mous >= 20) and (x_mous <= 220) and (y_mouse >= 450) and (y_mouse <= 525):
-                                dodj_ckek += 1
-                                print(dodj_ckek)
+                            dodj_ckek_botn = 1
+                        elif (x_mous >= 20) and (x_mous <= 220) and (y_mouse >= 450) and (y_mouse <= 525) \
+                                and (dodj_ckek_botn == 1):
+                            dodj_ckek += 1
+                            
+                            fight_step = 'monster'
+
 
 
         elif fight_monster_name == 'Naga' and fight_ckek_stolk == 0:
