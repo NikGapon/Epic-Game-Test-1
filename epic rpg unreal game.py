@@ -534,16 +534,16 @@ if player_class == 'archer':
 
 if player_class == 'warrior':
     skill1 = skiils('ryb hit v1.png', 35, 100, 0, 0)
-    skill2 = skiils('', 5, 3, 0, 2)
-    skill3 = skiils('', 30, 0, 0, 5)
-    skill4 = skiils('', 20, 0, 20, 0)
+    skill2 = skiils('arm hit v1.png', 5, 3, 0, 2)
+    skill3 = skiils('shield up v1.png', 30, 0, 0, 5)
+    skill4 = skiils('smoll hil.png', 20, 0, 20, 0)
 
 
 if player_class == 'wizard':
-    skill1 = skiils('', 35, 100, 0, 0)
-    skill2 = skiils('', 5, 3, 0, 2)
-    skill3 = skiils('', 30, 0, 0, 5)
-    skill4 = skiils('', 20, 0, 20, 0)
+    skill1 = skiils('Fireball v1.png', 35, 100, 0, 0)
+    skill2 = skiils('fire arm v1.png', 5, 3, 0, 2)
+    skill3 = skiils('arkain intel v1.png', 30, 0, 0, 5)
+    skill4 = skiils('holy light v1.png', 20, 0, 20, 0)
 
 level = load_level('test_world1.txt')
 player = generate_level(level)
@@ -555,7 +555,7 @@ Player_Hero = Hero(player_class)
 # ВРЕМЯ ПРЕДМЕТОВ
 
 XP_boots_25_1 = inv_eqip_upd('Xp_boost_+25_v2.png', ['XP', 25])
-XP_boots_10_1 = inv_eqip_upd('Xp_boost_+10_v2.png', ['XP', 25])
+XP_boots_10_1 = inv_eqip_upd('Xp_boost_+10_v2.png', ['XP', 10])
 MP_boots_20_1 = inv_eqip_upd('Mp_boost_+20_v2.png', ['MP', 20])
 
 # --------------START--------------
