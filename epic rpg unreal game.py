@@ -609,7 +609,7 @@ running = True
 while running:
     if win_ckek == 1:
         if fight_monster_name == 'Naga':
-
+            print('Герой победил Naga в бою')
             Naga_m.upd_out()
 
         player_tic_hp, player_tic_mp = Fight.hero_info()
@@ -623,7 +623,10 @@ while running:
         fight_ckek_stolk = 0
         dead_ckek = 0
         win_ckek = 0
-
+        dodj.rect.x = 4000
+        dodj.rect.y = -4000
+        dodj_ckek_botn = 0
+        dodj_ckek = 0
     elif dead_ckek == 1:
         dead_logo.rect.x = 0
         dead_logo.rect.y = 0
