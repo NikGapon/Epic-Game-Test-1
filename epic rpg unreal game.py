@@ -525,25 +525,7 @@ class skiils(pygame.sprite.Sprite):
         self.rect.y = -4000
 
 
-if player_class == 'archer':
-    skill1 = skiils('Accurate shot v1.png', 35, 100, 0, 0)
-    skill2 = skiils('Metca v1.png', 5, 3, 0, 2)
-    skill3 = skiils('reflex hunter v1.png', 30, 0, 0, 5)
-    skill4 = skiils('zelebnii trava v1.png', 20, 0, 20, 0)
 
-
-if player_class == 'warrior':
-    skill1 = skiils('ryb hit v1.png', 35, 100, 0, 0)
-    skill2 = skiils('arm hit v1.png', 5, 3, 0, 2)
-    skill3 = skiils('shield up v1.png', 30, 0, 0, 5)
-    skill4 = skiils('smoll hil.png', 20, 0, 20, 0)
-
-
-if player_class == 'wizard':
-    skill1 = skiils('Fireball v1.png', 35, 100, 0, 0)
-    skill2 = skiils('fire arm v1.png', 5, 3, 0, 2)
-    skill3 = skiils('arkain intel v1.png', 30, 0, 0, 5)
-    skill4 = skiils('holy light v1.png', 20, 0, 20, 0)
 
 level = load_level('test_world1.txt')
 player = generate_level(level)
@@ -574,6 +556,35 @@ dead_ckek = 0
 win_ckek = 0
 
 Naga_m = Naga(10)
+
+
+dodj = pygame.sprite.Sprite()
+dodj.image = load_image("dodj v1.png")
+dodj.rect = dodj.image.get_rect()
+fight_group.add(dodj)
+dodj.rect.x = 4000
+dodj.rect.y = -4000
+dodj_ckek = 0
+
+if player_class == 'archer':
+    skill1 = skiils('Accurate shot v1.png', 35, 100, 0, 0)
+    skill2 = skiils('Metca v1.png', 5, 3, 0, 2)
+    skill3 = skiils('reflex hunter v1.png', 30, 0, 0, 5)
+    skill4 = skiils('zelebnii trava v1.png', 20, 0, 20, 0)
+
+
+if player_class == 'warrior':
+    skill1 = skiils('ryb hit v1.png', 35, 100, 0, 0)
+    skill2 = skiils('arm hit v1.png', 5, 3, 0, 2)
+    skill3 = skiils('shield up v1.png', 30, 0, 0, 5)
+    skill4 = skiils('smoll hil.png', 20, 0, 20, 0)
+
+
+if player_class == 'wizard':
+    skill1 = skiils('Fireball v1.png', 35, 100, 0, 0)
+    skill2 = skiils('fire arm v1.png', 5, 3, 0, 2)
+    skill3 = skiils('arkain intel v1.png', 30, 0, 0, 5)
+    skill4 = skiils('holy light v1.png', 20, 0, 20, 0)
 
 
 pressed_left = False
@@ -643,6 +654,18 @@ while running:
                                 dead_ckek = 1  # код смерти
                             elif Fight.win_ckek() == 'Next':
                                 fight_step = 'monster'
+                        elif (x_mous >= 750) and (x_mous <= 1000) and (y_mouse >= 650) and (y_mouse <= 765):
+                            skill1.upd_out()
+                            skill2.upd_out()
+                            skill3.upd_out()
+                            skill4.upd_out()
+
+                            dodj.rect.x = 20
+                            dodj.rect.y = 450
+                            if (x_mous >= 20) and (x_mous <= 220) and (y_mouse >= 450) and (y_mouse <= 525):
+                                dodj_ckek += 1
+                                print(dodj_ckek)
+
 
         elif fight_monster_name == 'Naga' and fight_ckek_stolk == 0:
             print('Герой видит преред собой Naga, боя не избежать')
