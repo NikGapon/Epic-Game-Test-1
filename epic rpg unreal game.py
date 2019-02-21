@@ -506,6 +506,15 @@ class Fight_Go(pygame.sprite.Sprite):
         print('Герой наносит удар на', tic_dem, 'урона')
         print('Здоровье', self.monster_name + ':', self.hp_monster)
 
+    def mp_ckek(self):
+        return self.mp_hero
+
+    def skill_baf(self, dem, mp, hp, arm):
+        self.mp_hero -= mp
+        self.hp_hero += hp
+        self.arm_hero += arm
+        self.hp_monster -= dem
+
 
 class skiils(pygame.sprite.Sprite):
     def __init__(self, pict, mp, dam, hp, arm):
@@ -526,6 +535,9 @@ class skiils(pygame.sprite.Sprite):
     def upd_out(self):
         self.rect.x = 4000
         self.rect.y = -4000
+
+    def use_skill(self):
+        return self.mp, self.dam, self.hp, self.arm
 
 
 
@@ -590,6 +602,7 @@ if player_class == 'wizard':
     skill3 = skiils('arkain intel v1.png', 30, 0, 0, 5)
     skill4 = skiils('holy light v1.png', 20, 0, 20, 0)
 
+skills_ckek = 0
 
 pressed_left = False
 pressed_right = False
@@ -627,6 +640,10 @@ while running:
         dodj.rect.y = -4000
         dodj_ckek_botn = 0
         dodj_ckek = 0
+        skill1.upd_out()
+        skill2.upd_out()
+        skill3.upd_out()
+        skill4.upd_out()
     elif dead_ckek == 1:
         dead_logo.rect.x = 0
         dead_logo.rect.y = 0
@@ -691,6 +708,82 @@ while running:
                             dodj_ckek += 1
                             
                             fight_step = 'monster'
+
+                        elif (x_mous >= 395) and (x_mous <= 630) and (y_mouse >= 650) and (y_mouse <= 765):
+                            dodj.rect.x = 4000
+                            dodj.rect.y = -4000
+                            dodj_ckek_botn = 0
+                            dodj_ckek = 0
+                            skill1.upd(20, 450)
+                            skill2.upd(120, 450)
+                            skill3.upd(240, 450)
+                            skill4.upd(360, 450)
+                            skills_ckek = 1
+                        elif (x_mous > 20) and (x_mous < 120) and (y_mouse >= 450) and (y_mouse <= 550)  \
+                            and (skills_ckek == 1):
+                            mp, dem, hp, arm = skill1.use_skill()
+                            if mp > Fight.mp_ckek():
+                                print('Недостаточно маны')
+                            else:
+                                Fight.skill_baf(dem, mp, hp, arm)
+                                print('Применяя умение ты нанёс монстру', dem, '. исцелился на', hp, '. получил', arm,\
+                                      'брони До конца боя. И потратил', mp, 'маны')
+                            if Fight.win_ckek() == 'Win_Hero':
+                                win_ckek = 1  # код победы
+                            elif Fight.win_ckek() == 'Win_Monster':
+                                dead_ckek = 1  # код смерти
+                            elif Fight.win_ckek() == 'Next':
+                                fight_step = 'monster'
+                        elif (x_mous > 120) and (x_mous < 240) and (y_mouse >= 450) and (y_mouse <= 550) \
+                            and (skills_ckek == 1):
+                            mp, dem, hp, arm = skill2.use_skill()
+                            if mp > Fight.mp_ckek():
+                                print('Недостаточно маны')
+                            else:
+                                Fight.skill_baf(dem, mp, hp, arm)
+                                print('Применяя умение ты нанёс монстру', dem, '. исцелился на', hp, '. получил', arm, \
+                                      'брони До конца боя. И потратил', mp, 'маны')
+                            if Fight.win_ckek() == 'Win_Hero':
+                                win_ckek = 1  # код победы
+                            elif Fight.win_ckek() == 'Win_Monster':
+                                dead_ckek = 1  # код смерти
+                            elif Fight.win_ckek() == 'Next':
+                                fight_step = 'monster'
+
+                        elif (x_mous > 240) and (x_mous < 360) and (y_mouse >= 450) and (y_mouse <= 550) \
+                            and (skills_ckek == 1):
+                            mp, dem, hp, arm = skill3.use_skill()
+                            if mp > Fight.mp_ckek():
+                                print('Недостаточно маны')
+                            else:
+                                Fight.skill_baf(dem, mp, hp, arm)
+                                print('Применяя умение ты нанёс монстру', dem, '. исцелился на', hp, '. получил', arm, \
+                                      'брони До конца боя. И потратил', mp, 'маны')
+                            if Fight.win_ckek() == 'Win_Hero':
+                                win_ckek = 1  # код победы
+                            elif Fight.win_ckek() == 'Win_Monster':
+                                dead_ckek = 1  # код смерти
+                            elif Fight.win_ckek() == 'Next':
+                                fight_step = 'monster'
+
+                        elif (x_mous > 360) and (x_mous < 480) and (y_mouse >= 450) and (y_mouse <= 550) \
+                            and (skills_ckek == 1):
+                            mp, dem, hp, arm = skill4.use_skill()
+                            if mp > Fight.mp_ckek():
+                                print('Недостаточно маны')
+                            else:
+                                Fight.skill_baf(dem, mp, hp, arm)
+                                print('Применяя умение ты нанёс монстру', dem, '. исцелился на', hp, '. получил', arm, \
+                                      'брони До конца боя. И потратил', mp, 'маны')
+                            if Fight.win_ckek() == 'Win_Hero':
+                                win_ckek = 1  # код победы
+                            elif Fight.win_ckek() == 'Win_Monster':
+                                dead_ckek = 1  # код смерти
+                            elif Fight.win_ckek() == 'Next':
+                                fight_step = 'monster'
+
+
+
 
 
 
