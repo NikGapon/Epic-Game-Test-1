@@ -247,23 +247,23 @@ def generate_level(level):
                 Tile('road', x, y)
                 new_player = Player(x, y)
             elif level[y][x] == '&':
-                Wall(x, y)
+                Tile('wood', x, y)
             elif level[y][x] == '!':
                 if location == 1:
                     Tile('road', x, y)
                 elif location == 0:
                     Tile('empty', x, y)
-                Monster(x, y)
+                Tile('Naga', x, y)
             elif level[y][x] == 'l':
-                Decor('shop', x, y)
+                Tile('shop', x, y)
             elif level[y][x] == 'o':
-                Decor('vegetables1', x, y)
+                Tile('vegetables1', x, y)
             elif level[y][x] == 's':
-                Decor('decor_shop1', x, y)
+                Tile('decor_shop1', x, y)
             elif level[y][x] == 'd':
-                Decor('decor_shop2', x, y)
+                Tile('decor_shop2', x, y)
             elif level[y][x] == 'p':
-                Decor('vegetables2', x, y)
+                Tile('vegetables2', x, y)
 
     return new_player
 
@@ -279,18 +279,10 @@ tile_images = {
     'vegetables2': load_image('vegetables2.png'),
     'shop': load_image('lavka.png'),
     'decor_shop1': load_image('decor_shop1.png'),
-    'decor_shop2': load_image('decor_shop2.png')
+    'decor_shop2': load_image('decor_shop2.png'),
+    'Naga': load_image('monster.png'),
+    'wood': load_image('wood.png')
 }
-
-
-class Decor(pygame.sprite.Sprite):
-    def __init__(self, tile, x, y):
-        if tile == 'shop':
-            super().__init__(shop_group, all_sprites)
-        else:
-            super().__init__(decor_group, all_sprites)
-        self.image = tile_images[tile]
-        self.rect = self.image.get_rect().move(TILE_WIDTH * x, TILE_HEIGHT * y)
 
 
 class Buy(pygame.sprite.Sprite):
@@ -312,16 +304,17 @@ class Buy(pygame.sprite.Sprite):
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, tile_type, pos_x, pos_y):
-        super().__init__(tiles_group, all_sprites)
+        if tile_type == 'shop':
+            super().__init__(shop_group, all_sprites)
+        elif tile_type == 'decor_shop1' or tile_type == 'decor_shop2' or tile_type == 'vegetables1' or tile_type == 'vegetables2':
+            super().__init__(decor_group, all_sprites)
+        elif tile_type == 'wood':
+            super().__init__(walls_group, all_sprites)
+        elif tile_type == 'Naga':
+            super().__init__(monsters_group, all_sprites)
+        else:
+            super().__init__(tiles_group, all_sprites)
         self.image = tile_images[tile_type]
-        self.rect = self.image.get_rect().move(TILE_WIDTH * pos_x,
-                                               TILE_HEIGHT * pos_y)
-
-
-class Wall(Tile):
-    def __init__(self, pos_x, pos_y):
-        pygame.sprite.Sprite.__init__(self, walls_group)
-        self.image = load_image('wood.png')
         self.rect = self.image.get_rect().move(TILE_WIDTH * pos_x,
                                                TILE_HEIGHT * pos_y)
 
@@ -334,14 +327,6 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.image = self.frames[self.cur_frame]
         self.rect = self.image.get_rect()
         self.rect.move(x, y)
-
-
-class Monster(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        super().__init__(monsters_group, all_sprites)
-        self.image = load_image('monster.png')
-        self.rect = self.image.get_rect().move(
-            TILE_WIDTH * x, TILE_HEIGHT * y)
 
 
 class Player(AnimatedSprite):
@@ -548,8 +533,6 @@ class skiils(pygame.sprite.Sprite):
         return self.mp, self.dam, self.hp, self.arm
 
 
-
-
 level = load_level('main_location1.txt')
 player = generate_level(level)
 
@@ -579,7 +562,6 @@ dead_ckek = 0
 win_ckek = 0
 
 Naga_m = Naga(10)
-
 
 dodj = pygame.sprite.Sprite()
 dodj.image = load_image("dodj v1.png")
@@ -790,11 +772,6 @@ while running:
                             elif Fight.win_ckek() == 'Next':
                                 fight_step = 'monster'
 
-
-
-
-
-
         elif fight_monster_name == 'Naga' and fight_ckek_stolk == 0:
             print('Герой видит преред собой Naga, боя не избежать')
             player_tic_hp, player_tic_mp, player_lvl, player_dam, player_arm = Player_Hero.info_stat()
@@ -850,8 +827,6 @@ while running:
                             n.upd_out()
 
                     proverka_inv += 1
-
-
 
     elif proverka_inv % 2 != 0:
         for event in pygame.event.get():
