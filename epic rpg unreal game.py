@@ -607,10 +607,10 @@ dead_logo.rect = dead_logo.image.get_rect()
 dead_logo.add(fight_group)
 dead_logo.rect.x = 4000
 dead_logo.rect.y = -4000
-#pygame.mixer.init()
-#pygame.mixer.music.load('forest.ogg')
-#pygame.mixer.music.play()
-#pygame.mixer.music.stop()
+pygame.mixer.init()
+world_sound = pygame.mixer.Sound('data/forest.ogg')
+battle_sound = pygame.mixer.Sound('data/batel sounds v1.ogg')
+world_sound.play()
 running = True
 while running:
     if win_ckek == 1:
@@ -1062,3 +1062,4 @@ while running:
     pygame.display.flip()
     clock.tick(FPS)
 terminate()
+world_sound.stop()
