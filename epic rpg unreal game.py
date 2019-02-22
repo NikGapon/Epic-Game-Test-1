@@ -600,6 +600,7 @@ pressed_up = False
 pressed_down = False
 pressed_e = False
 shop_collide = False
+battle_sound_check = False
 
 dead_logo = pygame.sprite.Sprite()
 dead_logo.image = load_image("dead logo v1.png")
@@ -1046,9 +1047,13 @@ while running:
             fight_ckek = 1
             fight_monster_name = 'Naga'
             world_sound.stop()
-            battle_sound.play(0)
+            if not battle_sound_check:
+                battle_sound.play(0)
+                battle_sound_check = True
             if win_ckek == 1:
-                battle_sound.stop()
+                if battle_sound_check:
+                    battle_sound.stop()
+                    battle_sound_check = False
                 world_sound.play(1)
                 monster.rect.x = 4000
                 monster.rect.y = -4000
