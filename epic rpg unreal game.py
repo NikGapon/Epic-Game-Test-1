@@ -611,9 +611,12 @@ dead_logo.rect.y = -4000
 pygame.mixer.init()
 world_sound = pygame.mixer.Sound('data/forest.ogg')
 battle_sound = pygame.mixer.Sound('data/batel sounds v1.ogg')
+you_died_sound = pygame.mixer.Sound('data/you_died.ogg')
+you_died_sound.set_volume(0.5)
 world_sound.set_volume(0.5)
 battle_sound.set_volume(0.5)
 world_sound.play()
+you_died_sound_check = False
 running = True
 while running:
     if win_ckek == 1:
@@ -928,8 +931,6 @@ while running:
                             MP_boots_20_1.upd(0, 4000)
                             Player_Hero.apend_inv_hero(MP_boots_20_1)
 
-
-
         if pressed_left:
             player.update(
                 [load_image('animations\\{}_left_1.png'.format(player_class)),
@@ -1061,6 +1062,11 @@ while running:
                 pressed_right = False
                 pressed_up = False
                 pressed_down = False
+
+    if dead_ckek == 1 and not you_died_sound_check:
+        battle_sound.stop()
+        you_died_sound.play()
+        you_died_sound_check = True
 
     for shop in shop_group:
         if pygame.sprite.collide_rect(player, shop):
