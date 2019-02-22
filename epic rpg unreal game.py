@@ -610,6 +610,8 @@ dead_logo.rect.y = -4000
 pygame.mixer.init()
 world_sound = pygame.mixer.Sound('data/forest.ogg')
 battle_sound = pygame.mixer.Sound('data/batel sounds v1.ogg')
+world_sound.set_volume(0.5)
+battle_sound.set_volume(0.5)
 world_sound.play()
 running = True
 while running:
@@ -1030,7 +1032,11 @@ while running:
         if pygame.sprite.collide_rect(player, monster):
             fight_ckek = 1
             fight_monster_name = 'Naga'
+            world_sound.stop()
+            battle_sound.play(1)
             if win_ckek == 1:
+                battle_sound.stop()
+                world_sound.play(1)
                 monster.rect.x = 4000
                 monster.rect.y = -4000
                 pressed_left = False
