@@ -900,20 +900,33 @@ while running:
                         buy.upd_out_self()
                         pressed_e = False
                     elif event.pos[0] >= 0 and event.pos[1] <= 50:
-                        if Player_Hero.gold >= 10:
-                            XP_boots_10_1.upd(0, 4000)
+                        if Player_Hero.gold >= 10 and location != 2:
                             Player_Hero.gold_pop(10)
+                            XP_boots_10_1.upd(0, 4000)
+                            Player_Hero.apend_inv_hero(XP_boots_10_1)
+                        elif Player_Hero.gold >= 5 and location == 2:
+                            Player_Hero.gold_pop(10)
+                            XP_boots_10_1.upd(0, 4000)
                             Player_Hero.apend_inv_hero(XP_boots_10_1)
                     elif event.pos[0] >= 0 and event.pos[1] <= 100:
-                        if Player_Hero.gold >= 15:
-                            XP_boots_25_1.upd(0, 4000)
+                        if Player_Hero.gold >= 15 and location != 2:
                             Player_Hero.gold_pop(15)
+                            XP_boots_25_1.upd(0, 4000)
+                            Player_Hero.apend_inv_hero(XP_boots_25_1)
+                        elif Player_Hero.gold >= 10 and location == 2:
+                            Player_Hero.gold_pop(10)
+                            XP_boots_25_1.upd(0, 4000)
                             Player_Hero.apend_inv_hero(XP_boots_25_1)
                     elif event.pos[0] >= 0 and event.pos[1] <= 150:
-                        if Player_Hero.gold >= 20:
+                        if Player_Hero.gold >= 15 and location != 2:
+                            Player_Hero.gold_pop(15)
                             MP_boots_20_1.upd(0, 4000)
                             Player_Hero.apend_inv_hero(MP_boots_20_1)
-                            Player_Hero.gold_pop(20)
+                        elif Player_Hero.gold >= 10 and location == 2:
+                            Player_Hero.gold_pop(10)
+                            MP_boots_20_1.upd(0, 4000)
+                            Player_Hero.apend_inv_hero(MP_boots_20_1)
+
 
 
         if pressed_left:
@@ -1033,7 +1046,7 @@ while running:
             fight_ckek = 1
             fight_monster_name = 'Naga'
             world_sound.stop()
-            battle_sound.play(1)
+            battle_sound.play(0)
             if win_ckek == 1:
                 battle_sound.stop()
                 world_sound.play(1)
