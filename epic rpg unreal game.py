@@ -608,7 +608,7 @@ dead_logo.add(fight_group)
 dead_logo.rect.x = 4000
 dead_logo.rect.y = -4000
 #pygame.mixer.init()
-#pygame.mixer.music.load('forest.mp3')
+#pygame.mixer.music.load('forest.ogg')
 #pygame.mixer.music.play()
 #pygame.mixer.music.stop()
 running = True
